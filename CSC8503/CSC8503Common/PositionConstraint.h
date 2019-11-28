@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Constraint.h"
 
 namespace NCL {
@@ -9,20 +10,16 @@ namespace NCL {
         class PositionConstraint : public Constraint {
         public:
             PositionConstraint(GameObject* a, GameObject* b, float d)
-                : objectA(a), objectB(b), distance(d) { }
-
-            ~PositionConstraint() {
-                // TODO
-            }
+                : m_ObjectA(a), m_ObjectB(b), m_Distance(d) { }
+            ~PositionConstraint() = default;
 
             void UpdateConstraint(float dt) override;
 
         protected:
-            GameObject* objectA;
+            GameObject* m_ObjectA = nullptr;
+            GameObject* m_ObjectB = nullptr;
 
-            GameObject* objectB;
-
-            float distance;
+            float m_Distance;
         };
 
     }

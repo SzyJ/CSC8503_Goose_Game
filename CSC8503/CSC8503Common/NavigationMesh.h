@@ -6,14 +6,15 @@ namespace NCL {
     namespace CSC8503 {
         class NavigationMesh : public NavigationMap {
         public:
-            NavigationMesh();
+            NavigationMesh() = default;
             NavigationMesh(const std::string& filename);
-            ~NavigationMesh();
+            virtual ~NavigationMesh() = default;
 
             bool FindPath(const Vector3& from, const Vector3& to, NavigationPath& outPath) override;
 
         protected:
 
         };
+
     }
 }

@@ -1,14 +1,15 @@
 #pragma once
+
 #include "GameTechRenderer.h"
 #include "../CSC8503Common/PhysicsSystem.h"
 
-
 namespace NCL {
     namespace CSC8503 {
+
         class TutorialGame {
         public:
             TutorialGame();
-            ~TutorialGame();
+            virtual ~TutorialGame();
 
             virtual void UpdateGame(float dt);
 
@@ -46,48 +47,34 @@ namespace NCL {
             GameObject* AddCharacterToWorld(const Vector3& position);
             GameObject* AddAppleToWorld(const Vector3& position);
 
+            GameTechRenderer* m_Renderer;
+            PhysicsSystem* m_Physics;
+            GameWorld* m_World;
+            bool m_UseGravity;
+            bool m_InSelectionMode;
+            float m_ForceMagnitude;
 
-            GameTechRenderer* renderer;
-
-            PhysicsSystem* physics;
-
-            GameWorld* world;
-
-            bool useGravity;
-
-            bool inSelectionMode;
-
-            float forceMagnitude;
-
-            GameObject* selectionObject = nullptr;
-
-            OGLMesh* cubeMesh = nullptr;
-
-            OGLMesh* sphereMesh = nullptr;
-
-            OGLTexture* basicTex = nullptr;
-
-            OGLShader* basicShader = nullptr;
+            GameObject* m_SelectionObject = nullptr;
+            OGLMesh* m_CubeMesh = nullptr;
+            OGLMesh* m_SphereMesh = nullptr;
+            OGLTexture* m_BasicTex = nullptr;
+            OGLShader* m_BasicShader = nullptr;
 
             //Coursework Meshes
-            OGLMesh* gooseMesh = nullptr;
-
-            OGLMesh* keeperMesh = nullptr;
-
-            OGLMesh* appleMesh = nullptr;
-
-            OGLMesh* charA = nullptr;
-
-            OGLMesh* charB = nullptr;
+            OGLMesh* m_GooseMesh = nullptr;
+            OGLMesh* m_KeeperMesh = nullptr;
+            OGLMesh* m_AppleMesh = nullptr;
+            OGLMesh* m_CharA = nullptr;
+            OGLMesh* m_CharB = nullptr;
 
             //Coursework Additional functionality	
-            GameObject* lockedObject = nullptr;
-
-            Vector3 lockedOffset = Vector3(0, 14, 20);
+            GameObject* m_LockedObject = nullptr;
+            Vector3 m_LockedOffset = Vector3(0, 14, 20);
 
             void LockCameraToObject(GameObject* o) {
-                lockedObject = o;
+                m_LockedObject = o;
             }
         };
+
     }
 }

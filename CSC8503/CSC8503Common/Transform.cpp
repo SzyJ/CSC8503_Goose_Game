@@ -3,55 +3,53 @@
 using namespace NCL::CSC8503;
 
 Transform::Transform() {
-    parent = nullptr;
-    localScale = Vector3(1, 1, 1);
+    m_Parent = nullptr;
+    m_LocalScale = Vector3(1, 1, 1);
 }
 
 Transform::Transform(const Vector3& position, Transform* p) {
-    parent = p;
+    m_Parent = p;
     SetWorldPosition(position);
 }
 
-Transform::~Transform() {}
-
 void Transform::UpdateMatrices() {
-    localMatrix = Matrix4::Translation(localPosition) *
-        Matrix4(localOrientation) *
-        Matrix4::Scale(localScale);
+    m_LocalMatrix = Matrix4::Translation(m_LocalPosition) *
+        Matrix4(m_LocalOrientation) *
+        Matrix4::Scale(m_LocalScale);
 
-    if (parent) {
-        worldMatrix = parent->GetWorldMatrix() * localMatrix;
-        worldOrientation = parent->GetWorldOrientation() * localOrientation;
+    if (m_Parent) {
+        m_WorldMatrix = m_Parent->GetWorldMatrix() * m_LocalMatrix;
+        m_WorldOrientation = m_Parent->GetWorldOrientation() * m_LocalOrientation;
     } else {
-        worldMatrix = localMatrix;
-        worldOrientation = localOrientation;
+        m_WorldMatrix = m_LocalMatrix;
+        m_WorldOrientation = m_LocalOrientation;
     }
 }
 
 void Transform::SetWorldPosition(const Vector3& worldPos) {
-    if (parent) {
-        Vector3 parentPos = parent->GetWorldMatrix().GetPositionVector();
+    if (m_Parent) {
+        Vector3 parentPos = m_Parent->GetWorldMatrix().GetPositionVector();
         Vector3 posDiff = parentPos - worldPos;
 
-        localPosition = posDiff;
-        localMatrix.SetPositionVector(posDiff);
+        m_LocalPosition = posDiff;
+        m_LocalMatrix.SetPositionVector(posDiff);
     } else {
-        localPosition = worldPos;
+        m_LocalPosition = worldPos;
 
-        worldMatrix.SetPositionVector(worldPos);
+        m_WorldMatrix.SetPositionVector(worldPos);
     }
 }
 
 void Transform::SetLocalPosition(const Vector3& localPos) {
-    localPosition = localPos;
+    m_LocalPosition = localPos;
 }
 
 void Transform::SetWorldScale(const Vector3& worldScale) {
-    if (parent) { } else {
-        localScale = worldScale;
+    if (m_Parent) { } else {
+        m_LocalScale = worldScale;
     }
 }
 
 void Transform::SetLocalScale(const Vector3& newScale) {
-    localScale = newScale;
+    m_LocalScale = newScale;
 }

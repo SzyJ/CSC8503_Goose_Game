@@ -1,27 +1,30 @@
 #pragma once
+
 #include <vector>
 #include "Ray.h"
 #include "CollisionDetection.h"
 #include "QuadTree.h"
 
 namespace NCL {
-    class Camera;
 
+    class Camera;
     using Maths::Ray;
 
     namespace CSC8503 {
+
         class GameObject;
-
         class Constraint;
-
         typedef std::function<void(GameObject*)> GameObjectFunc;
-
         typedef std::vector<GameObject*>::const_iterator GameObjectIterator;
 
         class GameWorld {
         public:
-            GameWorld();
-            ~GameWorld();
+            GameWorld()
+                :m_QuadTree(nullptr), m_ShuffleConstraints(false), m_ShuffleObjects(false) {
+                m_MainCamera = new Camera();
+            }
+
+            ~GameWorld() = default;
 
             void Clear();
             void ClearAndErase();
@@ -33,15 +36,15 @@ namespace NCL {
             void RemoveConstraint(Constraint* c);
 
             Camera* GetMainCamera() const {
-                return mainCamera;
+                return m_MainCamera;
             }
 
             void ShuffleConstraints(bool state) {
-                shuffleConstraints = state;
+                m_ShuffleConstraints = state;
             }
 
             void ShuffleObjects(bool state) {
-                shuffleObjects = state;
+                m_ShuffleObjects = state;
             }
 
             bool Raycast(Ray& r, RayCollision& closestCollision, bool closestObject = false) const;
@@ -62,17 +65,13 @@ namespace NCL {
             void UpdateTransforms();
             void UpdateQuadTree();
 
-            std::vector<GameObject*> gameObjects;
-
-            std::vector<Constraint*> constraints;
-
-            QuadTree<GameObject*>* quadTree;
-
-            Camera* mainCamera;
-
-            bool shuffleConstraints;
-
-            bool shuffleObjects;
+            std::vector<GameObject*> m_GameObjects;
+            std::vector<Constraint*> m_Constraints;
+            QuadTree<GameObject*>* m_QuadTree;
+            Camera* m_MainCamera;
+            bool m_ShuffleConstraints;
+            bool m_ShuffleObjects;
         };
+
     }
 }

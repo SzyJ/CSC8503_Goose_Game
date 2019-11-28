@@ -10,17 +10,16 @@ namespace NCL {
             virtual bool CanTransition() const = 0;
 
             State* GetDestinationState() const {
-                return destinationState;
+                return m_DestinationState;
             }
 
             State* GetSourceState() const {
-                return sourceState;
+                return m_SourceState;
             }
 
         protected:
-            State* sourceState;
-
-            State* destinationState;
+            State* m_SourceState;
+            State* m_DestinationState;
         };
 
         template <class T, class U>
@@ -29,17 +28,15 @@ namespace NCL {
             typedef bool (*GenericTransitionFunc)(T, U);
 
             GenericTransition(GenericTransitionFunc f, T testData, U otherData, State* srcState, State* destState) :
-                dataA(testData), dataB(otherData) {
-                func = f;
-                sourceState = srcState; //
-                destinationState = destState;
+                m_DataA(testData), m_DataB(otherData), m_Func(f) {
+                m_SourceState = srcState;
+                m_DestinationState = destState;
             }
-
-            ~GenericTransition() {}
+            ~GenericTransition() = default;
 
             virtual bool CanTransition() const override {
-                if (func) {
-                    return func(dataA, dataB);
+                if (m_Func) {
+                    return m_Func(m_DataA, m_DataB);
                 }
                 return false;
             }
@@ -61,11 +58,10 @@ namespace NCL {
             }
 
         protected:
-            GenericTransitionFunc func;
-
-            T dataA;
-
-            U dataB;
+            GenericTransitionFunc m_Func;
+            T m_DataA;
+            U m_DataB;
         };
+
     }
 }

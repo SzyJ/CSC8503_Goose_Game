@@ -2,11 +2,11 @@
 
 namespace NCL {
     namespace CSC8503 {
+
         class State {
         public:
-            State() {}
-
-            virtual ~State() {}
+            State() = default;
+            virtual ~State() = default;
 
             virtual void Update() = 0; //Pure virtual base class
         };
@@ -15,21 +15,19 @@ namespace NCL {
 
         class GenericState : public State {
         public:
-            GenericState(StateFunc someFunc, void* someData) {
-                func = someFunc;
-                funcData = someData;
-            }
+            GenericState(StateFunc someFunc, void* someData)
+                : m_Func(someFunc), m_FuncData(someData) { }
 
             virtual void Update() {
-                if (funcData != nullptr) {
-                    func(funcData);
+                if (m_FuncData != nullptr) {
+                    m_Func(m_FuncData);
                 }
             }
 
         protected:
-            StateFunc func;
-
-            void* funcData;
+            StateFunc m_Func;
+            void* m_FuncData;
         };
+
     }
 }

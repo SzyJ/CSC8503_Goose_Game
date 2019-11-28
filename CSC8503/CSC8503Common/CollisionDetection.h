@@ -16,46 +16,41 @@ using namespace NCL::Maths;
 using namespace NCL::CSC8503;
 
 namespace NCL {
+
     class CollisionDetection {
     public:
         struct ContactPoint {
-            Vector3 localA;
-
-            Vector3 localB;
-
-            Vector3 normal;
-
-            float penetration;
+            Vector3 LocalA;
+            Vector3 LocalB;
+            Vector3 Normal;
+            float Penetration;
         };
 
         struct CollisionInfo {
-            GameObject* a;
-
-            GameObject* b;
-
-            mutable int framesLeft;
-
-            ContactPoint point;
+            GameObject* A;
+            GameObject* B;
+            mutable int FramesLeft;
+            ContactPoint Point;
 
             void AddContactPoint(const Vector3& localA, const Vector3& localB, const Vector3& normal, float p) {
-                point.localA = localA;
-                point.localB = localB;
-                point.normal = normal;
-                point.penetration = p;
+                Point.LocalA = localA;
+                Point.LocalB = localB;
+                Point.Normal = normal;
+                Point.Penetration = p;
             }
 
             //Advanced collision detection / resolution
             //This gets used as a quick hashing function to identify
             //unique pairs of colliding objects in lists.
             bool operator <(const CollisionInfo& other) const {
-                size_t otherHash = (size_t) other.a + ((size_t) other.b << 8);
-                size_t thisHash = (size_t) a + ((size_t) b << 8);
+                size_t otherHash = (size_t) other.A + ((size_t) other.B << 8);
+                size_t thisHash = (size_t) A + ((size_t) B << 8);
 
                 return (thisHash < otherHash);
             }
 
             bool operator ==(const CollisionInfo& other) const {
-                if (other.a == a && other.b == b) {
+                if (other.A == A && other.B == B) {
                     return true;
                 }
                 return false;
@@ -78,7 +73,6 @@ namespace NCL {
 
         static bool ObjectIntersection(GameObject* a, GameObject* b, CollisionInfo& collisionInfo);
 
-
         static bool AABBIntersection(const AABBVolume& volumeA, const Transform& worldTransformA,
             const AABBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo);
 
@@ -100,10 +94,9 @@ namespace NCL {
 
     protected:
 
-
     private:
-        CollisionDetection() {}
-
-        ~CollisionDetection() {}
+        CollisionDetection() = default;
+        ~CollisionDetection() = default;
     };
+
 }

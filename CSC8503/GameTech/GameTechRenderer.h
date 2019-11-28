@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../../Plugins/OpenGLRendering/OGLRenderer.h"
 #include "../../Plugins/OpenGLRendering/OGLShader.h"
 #include "../../Plugins/OpenGLRendering/OGLTexture.h"
@@ -7,11 +8,12 @@
 #include "../CSC8503Common/GameWorld.h"
 
 namespace NCL {
-    class Maths::Vector3;
 
+    class Maths::Vector3;
     class Maths::Vector4;
 
     namespace CSC8503 {
+
         class RenderObject;
 
         class GameTechRenderer : public OGLRenderer {
@@ -20,11 +22,21 @@ namespace NCL {
             ~GameTechRenderer();
 
         protected:
+            vector<const RenderObject*> m_ActiveObjects;
+
+            //shadow mapping things
+            OGLShader* m_ShadowShader = nullptr;
+            GLuint m_ShadowTex;
+            GLuint m_ShadowFBO;
+            Matrix4 m_ShadowMatrix;
+            Vector4 m_LightColour;
+            float m_LightRadius;
+            Vector3 m_LightPosition;
+
+            OGLShader* m_DefaultShader;
+            GameWorld& m_GameWorld;
+
             void RenderFrame() override;
-
-            OGLShader* defaultShader;
-
-            GameWorld& gameWorld;
 
             void BuildObjectList();
             void SortObjectList();
@@ -32,23 +44,7 @@ namespace NCL {
             void RenderCamera();
 
             void SetupDebugMatrix(OGLShader* s) override;
-
-            vector<const RenderObject*> activeObjects;
-
-            //shadow mapping things
-            OGLShader* shadowShader;
-
-            GLuint shadowTex;
-
-            GLuint shadowFBO;
-
-            Matrix4 shadowMatrix;
-
-            Vector4 lightColour;
-
-            float lightRadius;
-
-            Vector3 lightPosition;
         };
+
     }
 }

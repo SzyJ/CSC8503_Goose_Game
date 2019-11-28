@@ -3,19 +3,11 @@
 using namespace NCL;
 using namespace CSC8503;
 
-NetworkObject::NetworkObject(GameObject& o, int id) : object(o) {
-    deltaErrors = 0;
-    fullErrors = 0;
-    networkID = id;
-}
-
-NetworkObject::~NetworkObject() {}
-
 bool NetworkObject::ReadPacket(GamePacket& p) {
-    if (p.type == Delta_State) {
+    if (p.Type == Delta_State) {
         return ReadDeltaPacket((DeltaPacket&) p);
     }
-    if (p.type == Full_State) {
+    if (p.Type == Full_State) {
         return ReadFullPacket((FullPacket&) p);
     }
     return false; //this isn't a packet we care about!
@@ -32,15 +24,15 @@ bool NetworkObject::WritePacket(GamePacket** p, bool deltaFrame, int stateID) {
 
 //Client objects recieve these packets
 bool NetworkObject::ReadDeltaPacket(DeltaPacket& p) {
-    if (p.fullID != lastFullState.stateID) {
-        deltaErrors++; //can't delta this frame
+    if (p.fullID != m_LastFullState.m_StateID) {
+        m_DeltaErrors++; //can't delta this frame
         return false;
     }
 
     UpdateStateHistory(p.fullID);
 
-    Vector3 fullPos = lastFullState.position;
-    Quaternion fullOrientation = lastFullState.orientation;
+    Vector3 fullPos = m_LastFullState.m_Position;
+    Quaternion fullOrientation = m_LastFullState.m_Orientation;
 
     fullPos.x += p.pos[0];
     fullPos.y += p.pos[1];
@@ -51,22 +43,22 @@ bool NetworkObject::ReadDeltaPacket(DeltaPacket& p) {
     fullOrientation.z += ((float) p.orientation[2]) / 127.0f;
     fullOrientation.w += ((float) p.orientation[3]) / 127.0f;
 
-    object.GetTransform().SetWorldPosition(fullPos);
-    object.GetTransform().SetLocalOrientation(fullOrientation);
+    m_Object.GetTransform().SetWorldPosition(fullPos);
+    m_Object.GetTransform().SetLocalOrientation(fullOrientation);
 
     return true;
 }
 
 bool NetworkObject::ReadFullPacket(FullPacket& p) {
-    if (p.fullState.stateID < lastFullState.stateID) {
+    if (p.FullState.m_StateID < m_LastFullState.m_StateID) {
         return false; // received an 'old' packet, ignore!
     }
-    lastFullState = p.fullState;
+    m_LastFullState = p.FullState;
 
-    object.GetTransform().SetWorldPosition(lastFullState.position);
-    object.GetTransform().SetLocalOrientation(lastFullState.orientation);
+    m_Object.GetTransform().SetWorldPosition(m_LastFullState.m_Position);
+    m_Object.GetTransform().SetLocalOrientation(m_LastFullState.m_Orientation);
 
-    stateHistory.emplace_back(lastFullState);
+    m_StateHistory.emplace_back(m_LastFullState);
 
     return true;
 }
@@ -74,7 +66,7 @@ bool NetworkObject::ReadFullPacket(FullPacket& p) {
 bool NetworkObject::WriteDeltaPacket(GamePacket** p, int stateID) {
     DeltaPacket* dp = new DeltaPacket();
 
-    dp->objectID = networkID;
+    dp->objectID = m_NetworkID;
 
     NetworkState state;
     if (!GetNetworkState(stateID, state)) {
@@ -83,11 +75,11 @@ bool NetworkObject::WriteDeltaPacket(GamePacket** p, int stateID) {
 
     dp->fullID = stateID;
 
-    Vector3 currentPos = object.GetTransform().GetWorldPosition();
-    Quaternion currentOrientation = object.GetTransform().GetWorldOrientation();
+    Vector3 currentPos = m_Object.GetTransform().GetWorldPosition();
+    Quaternion currentOrientation = m_Object.GetTransform().GetWorldOrientation();
 
-    currentPos -= state.position;
-    currentOrientation -= state.orientation;
+    currentPos -= state.m_Position;
+    currentOrientation -= state.m_Orientation;
 
     dp->pos[0] = (char) currentPos.x;
     dp->pos[1] = (char) currentPos.y;
@@ -105,22 +97,22 @@ bool NetworkObject::WriteDeltaPacket(GamePacket** p, int stateID) {
 bool NetworkObject::WriteFullPacket(GamePacket** p) {
     FullPacket* fp = new FullPacket();
 
-    fp->objectID = networkID;
-    fp->fullState.position = object.GetTransform().GetWorldPosition();
-    fp->fullState.orientation = object.GetTransform().GetWorldOrientation();
-    fp->fullState.stateID = lastFullState.stateID++;
+    fp->ObjectID = m_NetworkID;
+    fp->FullState.m_Position = m_Object.GetTransform().GetWorldPosition();
+    fp->FullState.m_Orientation = m_Object.GetTransform().GetWorldOrientation();
+    fp->FullState.m_StateID = m_LastFullState.m_StateID++;
 
     *p = fp;
     return true;
 }
 
 NetworkState& NetworkObject::GetLatestNetworkState() {
-    return lastFullState;
+    return m_LastFullState;
 }
 
 bool NetworkObject::GetNetworkState(int stateID, NetworkState& state) {
-    for (auto i = stateHistory.begin(); i < stateHistory.end(); ++i) {
-        if ((*i).stateID == stateID) {
+    for (auto i = m_StateHistory.begin(); i < m_StateHistory.end(); ++i) {
+        if ((*i).m_StateID == stateID) {
             state = (*i);
             return true;
         }
@@ -129,9 +121,9 @@ bool NetworkObject::GetNetworkState(int stateID, NetworkState& state) {
 }
 
 void NetworkObject::UpdateStateHistory(int minID) {
-    for (auto i = stateHistory.begin(); i < stateHistory.end();) {
-        if ((*i).stateID < minID) {
-            i = stateHistory.erase(i);
+    for (auto i = m_StateHistory.begin(); i < m_StateHistory.end();) {
+        if ((*i).m_StateID < minID) {
+            i = m_StateHistory.erase(i);
         } else {
             ++i;
         }

@@ -1,42 +1,36 @@
 #pragma once
+
 #include "../../Common/Vector3.h"
 #include "../../Common/Plane.h"
 
 namespace NCL {
     namespace Maths {
+
         struct RayCollision {
-            void* node; //Node that was hit
-            Vector3 collidedAt; //WORLD SPACE position of the collision!
-            float rayDistance;
+            void* Node; //Node that was hit
+            Vector3 CollidedAt; //WORLD SPACE position of the collision!
+            float RayDistance;
 
-            RayCollision(void* node, Vector3 collidedAt) {
-                this->node = node;
-                this->collidedAt = collidedAt;
-                this->rayDistance = 0.0f;
-            }
-
-            RayCollision() {
-                node = nullptr;
-                rayDistance = FLT_MAX;
-            }
+            RayCollision(void* node, Vector3 collidedAt)
+                : Node(node), CollidedAt(collidedAt), RayDistance(0.0f) { }
+            RayCollision()
+                : Node(nullptr), RayDistance(FLT_MAX) { }
         };
 
         class Ray {
         public:
-            Ray(Vector3 position, Vector3 direction) {
-                this->position = position;
-                this->direction = direction;
-            }
+            Ray(Vector3 position, Vector3 direction)
+                : m_Position(position), m_Direction(direction) { }
+            ~Ray() = default;
 
-            ~Ray(void) {}
+            Vector3 GetPosition() const { return m_Position; }
 
-            Vector3 GetPosition() const { return position; }
-
-            Vector3 GetDirection() const { return direction; }
+            Vector3 GetDirection() const { return m_Direction; }
 
         protected:
-            Vector3 position; //World space position
-            Vector3 direction; //Normalised world space direction
+            Vector3 m_Position; //World space position
+            Vector3 m_Direction; //Normalised world space direction
         };
+
     }
 }

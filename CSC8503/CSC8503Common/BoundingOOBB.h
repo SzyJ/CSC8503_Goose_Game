@@ -1,14 +1,18 @@
 #pragma once
+
 #include "BoundingVolume.h"
 
 namespace NCL {
+
     class BoundingOOBB : BoundingVolume {
     public:
-        BoundingOOBB();
-        ~BoundingOOBB();
+        BoundingOOBB() {
+            m_Type = BoundingType::OOBB;
+        }
+        ~BoundingOOBB() = default;
 
-        Vector3 origin;
-
-        Vector3 halfSizes;
+        Vector3 m_Origin;
+        Vector3 m_HalfSizes;
     };
+
 }

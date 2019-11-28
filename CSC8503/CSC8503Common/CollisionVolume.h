@@ -1,5 +1,7 @@
 #pragma once
+
 namespace NCL {
+
     enum class VolumeType {
         AABB = 1,
         OBB = 2,
@@ -11,12 +13,12 @@ namespace NCL {
 
     class CollisionVolume {
     public:
-        CollisionVolume() {
-            type = VolumeType::Invalid;
-        }
+        CollisionVolume()
+            : m_Type(VolumeType::Invalid) { }
 
-        ~CollisionVolume() {}
+        ~CollisionVolume() = default;
 
-        VolumeType type;
+        VolumeType m_Type;
     };
+
 }

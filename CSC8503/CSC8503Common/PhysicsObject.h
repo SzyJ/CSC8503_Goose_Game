@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../../Common/Vector3.h"
 #include "../../Common/Matrix3.h"
 
@@ -12,31 +13,33 @@ namespace NCL {
 
         class PhysicsObject {
         public:
-            PhysicsObject(Transform* parentTransform, const CollisionVolume* parentVolume);
-            ~PhysicsObject();
+            PhysicsObject(Transform* parentTransform, const CollisionVolume* parentVolume)
+                :m_Volume(parentVolume), m_Transform(parentTransform), m_InverseMass(1.0f), m_Elasticity(0.8f), m_Friction(0.8f) { }
+
+            ~PhysicsObject() = default;
 
             Vector3 GetLinearVelocity() const {
-                return linearVelocity;
+                return m_LinearVelocity;
             }
 
             Vector3 GetAngularVelocity() const {
-                return angularVelocity;
+                return m_AngularVelocity;
             }
 
             Vector3 GetTorque() const {
-                return torque;
+                return m_Torque;
             }
 
             Vector3 GetForce() const {
-                return force;
+                return m_Force;
             }
 
             void SetInverseMass(float invMass) {
-                inverseMass = invMass;
+                m_InverseMass = invMass;
             }
 
             float GetInverseMass() const {
-                return inverseMass;
+                return m_InverseMass;
             }
 
             void ApplyAngularImpulse(const Vector3& force);
@@ -52,11 +55,11 @@ namespace NCL {
             void ClearForces();
 
             void SetLinearVelocity(const Vector3& v) {
-                linearVelocity = v;
+                m_LinearVelocity = v;
             }
 
             void SetAngularVelocity(const Vector3& v) {
-                angularVelocity = v;
+                m_AngularVelocity = v;
             }
 
             void InitCubeInertia();
@@ -65,34 +68,25 @@ namespace NCL {
             void UpdateInertiaTensor();
 
             Matrix3 GetInertiaTensor() const {
-                return inverseInteriaTensor;
+                return m_InverseInteriaTensor;
             }
 
         protected:
-            const CollisionVolume* volume;
-
-            Transform* transform;
-
-            float inverseMass;
-
-            float elasticity;
-
-            float friction;
+            const CollisionVolume* m_Volume;
+            Transform* m_Transform = nullptr;
+            float m_InverseMass;
+            float m_Elasticity;
+            float m_Friction;
 
             //linear stuff
-            Vector3 linearVelocity;
-
-            Vector3 force;
-
+            Vector3 m_LinearVelocity;
+            Vector3 m_Force;
 
             //angular stuff
-            Vector3 angularVelocity;
-
-            Vector3 torque;
-
-            Vector3 inverseInertia;
-
-            Matrix3 inverseInteriaTensor;
+            Vector3 m_AngularVelocity;
+            Vector3 m_Torque;
+            Vector3 m_InverseInertia;
+            Matrix3 m_InverseInteriaTensor;
         };
     }
 }

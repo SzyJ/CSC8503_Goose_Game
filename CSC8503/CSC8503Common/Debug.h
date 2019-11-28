@@ -1,45 +1,41 @@
 #pragma once
+
 #include "../../Plugins/OpenGLRendering/OGLRenderer.h"
 #include <vector>
 #include <string>
 
 namespace NCL {
+
     class Debug {
     public:
         static void Print(const std::string& text, const Vector2& pos, const Vector4& colour = Vector4(1, 1, 1, 1));
         static void DrawLine(const Vector3& startpoint, const Vector3& endpoint, const Vector4& colour = Vector4(1, 1, 1, 1));
 
         static void SetRenderer(OGLRenderer* r) {
-            renderer = r;
+            s_Renderer = r;
         }
 
         static void FlushRenderables();
 
     protected:
         struct DebugStringEntry {
-            std::string data;
-
-            Vector2 position;
-
-            Vector4 colour;
+            std::string Data;
+            Vector2 Position;
+            Vector4 Colour;
         };
 
         struct DebugLineEntry {
-            Vector3 start;
-
-            Vector3 end;
-
-            Vector4 colour;
+            Vector3 Start;
+            Vector3 End;
+            Vector4 Colour;
         };
 
-        Debug() {}
+        Debug() = default;
+        ~Debug() = default;
 
-        ~Debug() {}
-
-        static std::vector<DebugStringEntry> stringEntries;
-
-        static std::vector<DebugLineEntry> lineEntries;
-
-        static OGLRenderer* renderer;
+        static std::vector<DebugStringEntry> s_StringEntries;
+        static std::vector<DebugLineEntry> s_LineEntries;
+        static OGLRenderer* s_Renderer;
     };
+
 }

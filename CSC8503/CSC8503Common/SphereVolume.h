@@ -1,21 +1,23 @@
 #pragma once
+
 #include "CollisionVolume.h"
 
 namespace NCL {
+
     class SphereVolume : CollisionVolume {
     public:
-        SphereVolume(float sphereRadius = 1.0f) {
-            type = VolumeType::Sphere;
-            radius = sphereRadius;
+        SphereVolume(float sphereRadius = 1.0f)
+            : m_Radius(sphereRadius) {
+            m_Type = VolumeType::Sphere;
         }
-
-        ~SphereVolume() {}
+        ~SphereVolume() = default;
 
         float GetRadius() const {
-            return radius;
+            return m_Radius;
         }
 
     protected:
-        float radius;
+        float m_Radius;
     };
+
 }

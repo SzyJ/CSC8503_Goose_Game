@@ -1,29 +1,27 @@
 #pragma once
+
 #include "../../Common/Vector2.h"
 #include "Debug.h"
 #include <list>
 #include <functional>
 
 namespace NCL {
+
     using namespace NCL::Maths;
 
     namespace CSC8503 {
+
         template <class T>
         class QuadTree;
 
         template <class T>
         struct QuadTreeEntry {
-            Vector3 pos;
+            Vector3 Pos;
+            Vector3 Size;
+            T Object;
 
-            Vector3 size;
-
-            T object;
-
-            QuadTreeEntry(T obj, Vector3 pos, Vector3 size) {
-                object = obj;
-                this->pos = pos;
-                this->size = size;
-            }
+            QuadTreeEntry(T obj, Vector3 pos, Vector3 size)
+                : Object(obj), Pos(pos), Size(size) { }
         };
 
         template <class T>
@@ -34,16 +32,11 @@ namespace NCL {
         protected:
             friend class QuadTree<T>;
 
-            QuadTreeNode() {}
-
-            QuadTreeNode(Vector2 pos, Vector2 size) {
-                children = nullptr;
-                this->position = pos;
-                this->size = size;
-            }
-
+            QuadTreeNode() = default;
+            QuadTreeNode(Vector2 pos, Vector2 size)
+                : m_Position(pos), m_Size(size) {}
             ~QuadTreeNode() {
-                delete[] children;
+                delete[] m_Children;
             }
 
             void Insert(T& object, const Vector3& objectPos, const Vector3& objectSize, int depthLeft, int maxSize) { }
@@ -55,51 +48,46 @@ namespace NCL {
             void OperateOnContents(QuadTreeFunc& func) { }
 
         protected:
-            std::list<QuadTreeEntry<T>> contents;
-
-            Vector2 position;
-
-            Vector2 size;
-
-            QuadTreeNode<T>* children;
+            std::list<QuadTreeEntry<T>> m_Contents;
+            Vector2 m_Position;
+            Vector2 m_Size;
+            QuadTreeNode<T>* m_Children = nullptr;
         };
+
     }
 }
 
 
 namespace NCL {
+
     using namespace NCL::Maths;
 
     namespace CSC8503 {
+
         template <class T>
         class QuadTree {
         public:
-            QuadTree(Vector2 size, int maxDepth = 6, int maxSize = 5) {
-                root = QuadTreeNode<T>(Vector2(), size);
-                this->maxDepth = maxDepth;
-                this->maxSize = maxSize;
-            }
-
-            ~QuadTree() { }
+            QuadTree(Vector2 size, int maxDepth = 6, int maxSize = 5)
+                : m_Root(Vector2(), size), m_MaxDepth(maxDepth), m_MaxSize(maxSize) { }
+            ~QuadTree() = default;
 
             void Insert(T object, const Vector3& pos, const Vector3& size) {
-                root.Insert(object, pos, size, maxDepth, maxSize);
+                m_Root.Insert(object, pos, size, m_MaxDepth, m_MaxSize);
             }
 
             void DebugDraw() {
-                root.DebugDraw();
+                m_Root.DebugDraw();
             }
 
             void OperateOnContents(typename QuadTreeNode<T>::QuadTreeFunc func) {
-                root.OperateOnContents(func);
+                m_Root.OperateOnContents(func);
             }
 
         protected:
-            QuadTreeNode<T> root;
-
-            int maxDepth;
-
-            int maxSize;
+            QuadTreeNode<T> m_Root;
+            int m_MaxDepth;
+            int m_MaxSize;
         };
+
     }
 }

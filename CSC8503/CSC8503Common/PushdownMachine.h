@@ -1,21 +1,23 @@
 #pragma once
+
 #include <stack>
 
 namespace NCL {
     namespace CSC8503 {
+
         class PushdownState;
 
         class PushdownMachine {
         public:
-            PushdownMachine();
-            ~PushdownMachine();
+            PushdownMachine() = default;
+            ~PushdownMachine() = default;
 
             void Update();
 
         protected:
-            PushdownState* activeState;
-
-            std::stack<PushdownState*> stateStack;
+            PushdownState* m_ActiveState = nullptr;
+            std::stack<PushdownState*> m_StateStack;
         };
+
     }
 }

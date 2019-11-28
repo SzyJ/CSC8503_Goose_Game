@@ -5,13 +5,10 @@
 using namespace NCL;
 using namespace CSC8503;
 
-GameServer::GameServer(int onPort, int maxClients) {
-    port = onPort;
-    clientMax = maxClients;
-    clientCount = 0;
-    netHandle = nullptr;
-    //threadAlive = false;
+GameServer::GameServer(int onPort, int maxClients)
+    : m_Port(onPort), m_ClientMax(maxClients), m_ClientCount(0) {
 
+    //m_ThreadAlive = false;
     Initialise();
 }
 
@@ -22,50 +19,50 @@ GameServer::~GameServer() {
 void GameServer::Shutdown() {
     SendGlobalPacket(BasicNetworkMessages::Shutdown);
 
-    //threadAlive = false;
-    //updateThread.join();
+    //m_ThreadAlive = false;
+    //m_UpdateThread.join();
 
-    enet_host_destroy(netHandle);
-    netHandle = nullptr;
+    enet_host_destroy(m_NetHandle);
+    m_NetHandle = nullptr;
 }
 
 bool GameServer::Initialise() {
     ENetAddress address;
     address.host = ENET_HOST_ANY;
-    address.port = port;
+    address.port = m_Port;
 
-    netHandle = enet_host_create(&address, clientMax, 1, 0, 0);
+    m_NetHandle = enet_host_create(&address, m_ClientMax, 1, 0, 0);
 
-    if (!netHandle) {
+    if (!m_NetHandle) {
         std::cout << __FUNCTION__ << " failed to create network handle!" << std::endl;
         return false;
     }
-    //threadAlive = true;
-    //updateThread = std::thread(&GameServer::ThreadedUpdate, this);
+    //m_ThreadAlive = true;
+    //m_UpdateThread = std::thread(&GameServer::ThreadedUpdate, this);
 
     return true;
 }
 
 bool GameServer::SendGlobalPacket(int msgID) {
     GamePacket packet;
-    packet.type = msgID;
+    packet.Type = msgID;
 
     return SendGlobalPacket(packet);
 }
 
 bool GameServer::SendGlobalPacket(GamePacket& packet) {
     ENetPacket* dataPacket = enet_packet_create(&packet, packet.GetTotalSize(), 0);
-    enet_host_broadcast(netHandle, 0, dataPacket);
+    enet_host_broadcast(m_NetHandle, 0, dataPacket);
     return true;
 }
 
 void GameServer::UpdateServer() {
-    if (!netHandle) {
+    if (!m_NetHandle) {
         return;
     }
 
     ENetEvent event;
-    while (enet_host_service(netHandle, &event, 0) > 0) {
+    while (enet_host_service(m_NetHandle, &event, 0) > 0) {
         int type = event.type;
         ENetPeer* p = event.peer;
 
@@ -88,7 +85,7 @@ void GameServer::UpdateServer() {
 }
 
 //void GameServer::ThreadedUpdate() {
-//    while (threadAlive) {
+//    while (m_ThreadAlive) {
 //        UpdateServer();
 //    }
 //}
@@ -96,5 +93,5 @@ void GameServer::UpdateServer() {
 //Second networking tutorial stuff
 
 void GameServer::SetGameWorld(GameWorld& g) {
-    gameWorld = &g;
+    m_GameWorld = &g;
 }

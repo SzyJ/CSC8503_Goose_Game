@@ -6,13 +6,13 @@
 namespace NCL {
     namespace CSC8503 {
         struct FullPacket : public GamePacket {
-            int objectID = -1;
+            int ObjectID = -1;
 
-            NetworkState fullState;
+            NetworkState FullState;
 
             FullPacket() {
-                type = Full_State;
-                size = sizeof(FullPacket) - sizeof(GamePacket);
+                Type = Full_State;
+                Size = sizeof(FullPacket) - sizeof(GamePacket);
             }
         };
 
@@ -26,25 +26,26 @@ namespace NCL {
             char orientation[4];
 
             DeltaPacket() {
-                type = Delta_State;
-                size = sizeof(DeltaPacket) - sizeof(GamePacket);
+                Type = Delta_State;
+                Size = sizeof(DeltaPacket) - sizeof(GamePacket);
             }
         };
 
         struct ClientPacket : public GamePacket {
-            int lastID;
+            int LastID;
 
-            char buttonstates[8];
+            char Buttonstates[8];
 
             ClientPacket() {
-                size = sizeof(ClientPacket);
+                Size = sizeof(ClientPacket);
             }
         };
 
         class NetworkObject {
         public:
-            NetworkObject(GameObject& o, int id);
-            virtual ~NetworkObject();
+            NetworkObject(GameObject& o, int id)
+                : m_Object(o), m_NetworkID(id) {}
+            virtual ~NetworkObject() = default;
 
             //Called by clients
             virtual bool ReadPacket(GamePacket& p);
@@ -54,7 +55,6 @@ namespace NCL {
             void UpdateStateHistory(int minID);
 
         protected:
-
             NetworkState& GetLatestNetworkState();
 
             bool GetNetworkState(int frameID, NetworkState& state);
@@ -65,17 +65,13 @@ namespace NCL {
             virtual bool WriteDeltaPacket(GamePacket** p, int stateID);
             virtual bool WriteFullPacket(GamePacket** p);
 
-            GameObject& object;
+            GameObject& m_Object;
+            NetworkState m_LastFullState;
+            std::vector<NetworkState> m_StateHistory;
 
-            NetworkState lastFullState;
-
-            std::vector<NetworkState> stateHistory;
-
-            int deltaErrors;
-
-            int fullErrors;
-
-            int networkID;
+            int m_DeltaErrors = 0;
+            int m_FullErrors = 0;
+            int m_NetworkID;
         };
     }
 }

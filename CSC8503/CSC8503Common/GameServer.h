@@ -1,4 +1,5 @@
 #pragma once
+
 #include <thread>
 #include <atomic>
 
@@ -6,8 +7,8 @@
 
 namespace NCL {
     namespace CSC8503 {
-        class GameWorld;
 
+        class GameWorld;
         class GameServer : public NetworkBase {
         public:
             GameServer(int onPort, int maxClients);
@@ -26,22 +27,15 @@ namespace NCL {
             virtual void UpdateServer();
 
         protected:
-            int port;
+            int m_Port;
+            int m_ClientMax;
+            int m_ClientCount;
+            GameWorld* m_GameWorld = nullptr;
+            //std::atomic<bool> m_ThreadAlive;
+            //std::thread m_UpdateThread;
+            int m_IncomingDataRate;
 
-            int clientMax;
-
-            int clientCount;
-
-            GameWorld* gameWorld;
-
-            //std::atomic<bool> threadAlive;
-
-
-            //std::thread updateThread;
-
-            int incomingDataRate;
-
-            int outgoingDataRate;
+            int m_OutgoingDataRate;
         };
     }
 }

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../CSC8503Common/GameWorld.h"
 #include <set>
 
@@ -7,7 +8,10 @@ namespace NCL {
 
         class PhysicsSystem {
         public:
-            PhysicsSystem(GameWorld& g);
+            PhysicsSystem(GameWorld& g)
+                : m_GameWorld(g), m_ApplyGravity(false), m_UseBroadPhase(false), m_DTOffset(0.0f), m_GlobalDamping(0.95f) {
+                SetGravity(Vector3(0.0f, -9.8f, 0.0f));
+            }
             ~PhysicsSystem() = default;
 
             void Clear();
@@ -15,11 +19,11 @@ namespace NCL {
             void Update(float dt);
 
             void UseGravity(bool state) {
-                applyGravity = state;
+                m_ApplyGravity = state;
             }
 
             void SetGlobalDamping(float d) {
-                globalDamping = d;
+                m_GlobalDamping = d;
             }
 
             void SetGravity(const Vector3& g);
@@ -41,27 +45,23 @@ namespace NCL {
 
             void ImpulseResolveCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const;
 
-            GameWorld& gameWorld;
+            GameWorld& m_GameWorld;
 
-            bool applyGravity;
+            bool m_ApplyGravity;
 
-            Vector3 gravity;
+            Vector3 m_Gravity;
 
-            float dTOffset;
+            float m_DTOffset;
+            float m_GlobalDamping;
+            float m_FrameDT;
 
-            float globalDamping;
+            std::set<CollisionDetection::CollisionInfo> m_AllCollisions;
+            std::set<CollisionDetection::CollisionInfo> m_BroadphaseCollisions;
+            std::vector<CollisionDetection::CollisionInfo> m_BroadphaseCollisionsVec;
 
-            float frameDT;
+            bool m_UseBroadPhase = true;
 
-            std::set<CollisionDetection::CollisionInfo> allCollisions;
-
-            std::set<CollisionDetection::CollisionInfo> broadphaseCollisions;
-
-            std::vector<CollisionDetection::CollisionInfo> broadphaseCollisionsVec;
-
-            bool useBroadPhase = true;
-
-            int numCollisionFrames = 5;
+            int m_NumCollisionFrames = 5;
         };
 
     }

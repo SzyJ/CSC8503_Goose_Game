@@ -2,45 +2,44 @@
 
 using namespace NCL;
 
-OGLRenderer* Debug::renderer = nullptr;
+OGLRenderer* Debug::s_Renderer = nullptr;
 
-std::vector<Debug::DebugStringEntry> Debug::stringEntries;
+std::vector<Debug::DebugStringEntry> Debug::s_StringEntries;
 
-std::vector<Debug::DebugLineEntry> Debug::lineEntries;
-
+std::vector<Debug::DebugLineEntry> Debug::s_LineEntries;
 
 void Debug::Print(const std::string& text, const Vector2& pos, const Vector4& colour) {
     DebugStringEntry newEntry;
 
-    newEntry.data = text;
-    newEntry.position = pos;
-    newEntry.colour = colour;
+    newEntry.Data = text;
+    newEntry.Position = pos;
+    newEntry.Colour = colour;
 
-    stringEntries.emplace_back(newEntry);
+    s_StringEntries.emplace_back(newEntry);
 }
 
 void Debug::DrawLine(const Vector3& startpoint, const Vector3& endpoint, const Vector4& colour) {
     DebugLineEntry newEntry;
 
-    newEntry.start = startpoint;
-    newEntry.end = endpoint;
-    newEntry.colour = colour;
+    newEntry.Start = startpoint;
+    newEntry.End = endpoint;
+    newEntry.Colour = colour;
 
-    lineEntries.emplace_back(newEntry);
+    s_LineEntries.emplace_back(newEntry);
 }
 
 void Debug::FlushRenderables() {
-    if (!renderer) {
+    if (!s_Renderer) {
         return;
     }
-    for (const auto& i : stringEntries) {
-        renderer->DrawString(i.data, i.position);
+    for (const auto& i : s_StringEntries) {
+        s_Renderer->DrawString(i.Data, i.Position);
     }
 
-    for (const auto& i : lineEntries) {
-        renderer->DrawLine(i.start, i.end, i.colour);
+    for (const auto& i : s_LineEntries) {
+        s_Renderer->DrawLine(i.Start, i.End, i.Colour);
     }
 
-    stringEntries.clear();
-    lineEntries.clear();
+    s_StringEntries.clear();
+    s_LineEntries.clear();
 }

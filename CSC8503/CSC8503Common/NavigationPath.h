@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../../Common/Vector3.h"
 #include <vector>
 
@@ -8,29 +9,30 @@ namespace NCL {
     namespace CSC8503 {
         class NavigationPath {
         public:
-            NavigationPath() {}
+            NavigationPath() = default;
 
-            ~NavigationPath() {}
+            ~NavigationPath() = default;
 
             void Clear() {
-                waypoints.clear();
+                m_Waypoints.clear();
             }
 
             void PushWaypoint(const Vector3& wp) {
-                waypoints.emplace_back(wp);
+                m_Waypoints.emplace_back(wp);
             }
 
             bool PopWaypoint(Vector3& waypoint) {
-                if (waypoints.empty()) {
+                if (m_Waypoints.empty()) {
                     return false;
                 }
-                waypoint = waypoints.back();
-                waypoints.pop_back();
+                waypoint = m_Waypoints.back();
+                m_Waypoints.pop_back();
                 return true;
             }
 
         protected:
-            std::vector<Vector3> waypoints;
+            std::vector<Vector3> m_Waypoints;
         };
+
     }
 }

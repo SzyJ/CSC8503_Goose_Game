@@ -8,50 +8,39 @@
 using namespace NCL;
 using namespace NCL::CSC8503;
 
-GameWorld::GameWorld() {
-    mainCamera = new Camera();
-
-    quadTree = nullptr;
-
-    shuffleConstraints = false;
-    shuffleObjects = false;
-}
-
-GameWorld::~GameWorld() {}
-
 void GameWorld::Clear() {
-    gameObjects.clear();
-    constraints.clear();
+    m_GameObjects.clear();
+    m_Constraints.clear();
 }
 
 void GameWorld::ClearAndErase() {
-    for (auto& i : gameObjects) {
+    for (auto& i : m_GameObjects) {
         delete i;
     }
-    for (auto& i : constraints) {
+    for (auto& i : m_Constraints) {
         delete i;
     }
     Clear();
 }
 
 void GameWorld::AddGameObject(GameObject* o) {
-    gameObjects.emplace_back(o);
+    m_GameObjects.emplace_back(o);
 }
 
 void GameWorld::RemoveGameObject(GameObject* o) {
-    std::remove(gameObjects.begin(), gameObjects.end(), o);
+    std::remove(m_GameObjects.begin(), m_GameObjects.end(), o);
 }
 
 void GameWorld::GetObjectIterators(
     GameObjectIterator& first,
     GameObjectIterator& last) const {
 
-    first = gameObjects.begin();
-    last = gameObjects.end();
+    first = m_GameObjects.begin();
+    last = m_GameObjects.end();
 }
 
 void GameWorld::OperateOnContents(GameObjectFunc f) {
-    for (GameObject* g : gameObjects) {
+    for (GameObject* g : m_GameObjects) {
         f(g);
     }
 }
@@ -59,23 +48,23 @@ void GameWorld::OperateOnContents(GameObjectFunc f) {
 void GameWorld::UpdateWorld(float dt) {
     UpdateTransforms();
 
-    if (shuffleObjects) {
-        std::random_shuffle(gameObjects.begin(), gameObjects.end());
+    if (m_ShuffleObjects) {
+        std::random_shuffle(m_GameObjects.begin(), m_GameObjects.end());
     }
 
-    if (shuffleConstraints) {
-        std::random_shuffle(constraints.begin(), constraints.end());
+    if (m_ShuffleConstraints) {
+        std::random_shuffle(m_Constraints.begin(), m_Constraints.end());
     }
 }
 
 void GameWorld::UpdateTransforms() {
-    for (auto& i : gameObjects) {
+    for (auto& i : m_GameObjects) {
         i->GetTransform().UpdateMatrices();
     }
 }
 
 void GameWorld::UpdateQuadTree() {
-    delete quadTree;
+    delete m_QuadTree;
 
     //quadTree = new QuadTree<GameObject*>(Vector2(512, 512), 6);
 
@@ -88,7 +77,7 @@ bool GameWorld::Raycast(Ray& r, RayCollision& closestCollision, bool closestObje
     //The simplest raycast just goes through each object and sees if there's a collision
     RayCollision collision;
 
-    for (auto& i : gameObjects) {
+    for (auto& i : m_GameObjects) {
         if (!i->GetBoundingVolume()) {
             //objects might not be collideable etc...
             continue;
@@ -98,19 +87,19 @@ bool GameWorld::Raycast(Ray& r, RayCollision& closestCollision, bool closestObje
 
             if (!closestObject) {
                 closestCollision = collision;
-                closestCollision.node = i;
+                closestCollision.Node = i;
                 return true;
             } else {
-                if (thisCollision.rayDistance < collision.rayDistance) {
-                    thisCollision.node = i;
+                if (thisCollision.RayDistance < collision.RayDistance) {
+                    thisCollision.Node = i;
                     collision = thisCollision;
                 }
             }
         }
     }
-    if (collision.node) {
+    if (collision.Node) {
         closestCollision = collision;
-        closestCollision.node = collision.node;
+        closestCollision.Node = collision.Node;
         return true;
     }
     return false;
@@ -122,16 +111,16 @@ Constraint Tutorial Stuff
 */
 
 void GameWorld::AddConstraint(Constraint* c) {
-    constraints.emplace_back(c);
+    m_Constraints.emplace_back(c);
 }
 
 void GameWorld::RemoveConstraint(Constraint* c) {
-    std::remove(constraints.begin(), constraints.end(), c);
+    std::remove(m_Constraints.begin(), m_Constraints.end(), c);
 }
 
 void GameWorld::GetConstraintIterators(
     std::vector<Constraint*>::const_iterator& first,
     std::vector<Constraint*>::const_iterator& last) const {
-    first = constraints.begin();
-    last = constraints.end();
+    first = m_Constraints.begin();
+    last = m_Constraints.end();
 }

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../../Common/Matrix4.h"
 #include "../../Common/Matrix3.h"
 #include "../../Common/Vector3.h"
@@ -7,16 +8,16 @@
 #include <vector>
 
 using std::vector;
-
 using namespace NCL::Maths;
 
 namespace NCL {
     namespace CSC8503 {
+
         class Transform {
         public:
             Transform();
             Transform(const Vector3& position, Transform* parent = nullptr);
-            ~Transform();
+            ~Transform() = default;
 
             void SetWorldPosition(const Vector3& worldPos);
             void SetLocalPosition(const Vector3& localPos);
@@ -25,67 +26,61 @@ namespace NCL {
             void SetLocalScale(const Vector3& localScale);
 
             Transform* GetParent() const {
-                return parent;
+                return m_Parent;
             }
 
             void SetParent(Transform* newParent) {
-                parent = newParent;
+                m_Parent = newParent;
             }
 
             Matrix4 GetWorldMatrix() const {
-                return worldMatrix;
+                return m_WorldMatrix;
             }
 
             Matrix4 GetLocalMatrix() const {
-                return localMatrix;
+                return m_LocalMatrix;
             }
 
             Vector3 GetWorldPosition() const {
-                return worldMatrix.GetPositionVector();
+                return m_WorldMatrix.GetPositionVector();
             }
 
             Vector3 GetLocalPosition() const {
-                return localPosition;
+                return m_LocalPosition;
             }
 
             Vector3 GetLocalScale() const {
-                return localScale;
+                return m_LocalScale;
             }
 
             Quaternion GetLocalOrientation() const {
-                return localOrientation;
+                return m_LocalOrientation;
             }
 
             void SetLocalOrientation(const Quaternion& newOr) {
-                localOrientation = newOr;
+                m_LocalOrientation = newOr;
             }
 
             Quaternion GetWorldOrientation() const {
-                return worldOrientation;
+                return m_WorldOrientation;
             }
 
             Matrix3 GetInverseWorldOrientationMat() const {
-                return worldOrientation.Conjugate().ToMatrix3();
+                return m_WorldOrientation.Conjugate().ToMatrix3();
             }
 
             void UpdateMatrices();
 
         protected:
-            Matrix4 localMatrix;
-
-            Matrix4 worldMatrix;
-
-            Vector3 localPosition;
-
-            Vector3 localScale;
-
-            Quaternion localOrientation;
-
-            Quaternion worldOrientation;
-
-            Transform* parent;
-
-            vector<Transform*> children;
+            Matrix4 m_LocalMatrix;
+            Matrix4 m_WorldMatrix;
+            Vector3 m_LocalPosition;
+            Vector3 m_LocalScale;
+            Quaternion m_LocalOrientation;
+            Quaternion m_WorldOrientation;
+            Transform* m_Parent;
+            vector<Transform*> m_Children;
         };
+
     }
 }

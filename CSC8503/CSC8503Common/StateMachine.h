@@ -1,4 +1,5 @@
 #pragma once
+
 #include <vector>
 #include <map>
 
@@ -15,8 +16,8 @@ namespace NCL {
 
         class StateMachine {
         public:
-            StateMachine();
-            ~StateMachine();
+            StateMachine() = default;
+            ~StateMachine() = default;
 
             void AddState(State* s);
             void AddTransition(StateTransition* t);
@@ -24,11 +25,10 @@ namespace NCL {
             void Update();
 
         protected:
-            State* activeState;
-
-            std::vector<State*> allStates;
-
-            TransitionContainer allTransitions;
+            State* m_ActiveState = nullptr;
+            std::vector<State*> m_AllStates;
+            TransitionContainer m_AllTransitions;
         };
+
     }
 }

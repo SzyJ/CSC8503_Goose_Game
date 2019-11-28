@@ -1,4 +1,5 @@
 #pragma once
+
 #include "NetworkBase.h"
 #include <stdint.h>
 #include <thread>
@@ -6,8 +7,8 @@
 
 namespace NCL {
     namespace CSC8503 {
-        class GameObject;
 
+        class GameObject;
         class GameClient : public NetworkBase {
         public:
             GameClient();
@@ -18,13 +19,14 @@ namespace NCL {
             void SendPacket(GamePacket& payload);
 
             void UpdateClient();
+
         protected:
             //void ThreadedUpdate();
 
-            ENetPeer* netPeer;
-
-            //std::atomic<bool>    threadAlive;
-            //std::thread            updateThread;
+            ENetPeer* m_NetPeer = nullptr;
+            //std::atomic<bool> threadAlive;
+            //std::thread updateThread;
         };
+
     }
 }

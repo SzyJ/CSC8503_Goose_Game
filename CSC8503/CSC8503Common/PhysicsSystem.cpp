@@ -9,20 +9,12 @@
 #include "Debug.h"
 
 #include <functional>
+
 using namespace NCL;
 using namespace CSC8503;
 
-PhysicsSystem::PhysicsSystem(GameWorld& g)
-    : gameWorld(g) {
-    applyGravity = false;
-    useBroadPhase = false;
-    dTOffset = 0.0f;
-    globalDamping = 0.95f;
-    SetGravity(Vector3(0.0f, -9.8f, 0.0f));
-}
-
 void PhysicsSystem::SetGravity(const Vector3& g) {
-    gravity = g;
+    m_Gravity = g;
 }
 
 /*
@@ -36,7 +28,7 @@ any collisions they are in.
 
 */
 void PhysicsSystem::Clear() {
-    allCollisions.clear();
+    m_AllCollisions.clear();
 }
 
 /*
@@ -48,21 +40,21 @@ void PhysicsSystem::Update(float dt) {
     GameTimer testTimer;
     testTimer.GetTimeDeltaSeconds();
 
-    frameDT = dt;
+    m_FrameDT = dt;
 
-    dTOffset += dt; //We accumulate time delta here - there might be remainders from previous frame!
+    m_DTOffset += dt; //We accumulate time delta here - there might be remainders from previous frame!
 
     float iterationDt = 1.0f / 120.0f; //Ideally we'll have 120 physics updates a second 
 
-    if (dTOffset > 8 * iterationDt) {
+    if (m_DTOffset > 8 * iterationDt) {
         //the physics engine cant catch up!
         iterationDt = 1.0f / 15.0f; //it'll just have to run bigger timesteps...
         //std::cout << "Setting physics iterations to 15" << iterationDt << std::endl;
-    } else if (dTOffset > 4 * iterationDt) {
+    } else if (m_DTOffset > 4 * iterationDt) {
         //the physics engine cant catch up!
         iterationDt = 1.0f / 30.0f; //it'll just have to run bigger timesteps...
         //std::cout << "Setting iteration dt to 4 case " << iterationDt << std::endl;
-    } else if (dTOffset > 2 * iterationDt) {
+    } else if (m_DTOffset > 2 * iterationDt) {
         //the physics engine cant catch up!
         iterationDt = 1.0f / 60.0f; //it'll just have to run bigger timesteps...
         //std::cout << "Setting iteration dt to 2 case " << iterationDt << std::endl;
@@ -73,13 +65,13 @@ void PhysicsSystem::Update(float dt) {
     int constraintIterationCount = 10;
     iterationDt = dt;
 
-    if (useBroadPhase) {
+    if (m_UseBroadPhase) {
         UpdateObjectAABBs();
     }
 
-    while (dTOffset > iterationDt * 0.5) {
+    while (m_DTOffset > iterationDt * 0.5) {
         IntegrateAccel(iterationDt); //Update accelerations from external forces
-        if (useBroadPhase) {
+        if (m_UseBroadPhase) {
             BroadPhase();
             NarrowPhase();
         } else {
@@ -97,7 +89,7 @@ void PhysicsSystem::Update(float dt) {
 
         IntegrateVelocity(iterationDt); //update positions from new velocity changes
 
-        dTOffset -= iterationDt;
+        m_DTOffset -= iterationDt;
     }
     ClearForces(); //Once we've finished with the forces, reset them to zero
 
@@ -119,16 +111,16 @@ OnCollisionBegin / OnCollisionEnd functions (removing health when hit by a
 rocket launcher, gaining a point when the player hits the gold coin, and so on).
 */
 void PhysicsSystem::UpdateCollisionList() {
-    for (std::set<CollisionDetection::CollisionInfo>::iterator i = allCollisions.begin(); i != allCollisions.end();) {
-        if ((*i).framesLeft == numCollisionFrames) {
-            i->a->OnCollisionBegin(i->b);
-            i->b->OnCollisionBegin(i->a);
+    for (std::set<CollisionDetection::CollisionInfo>::iterator i = m_AllCollisions.begin(); i != m_AllCollisions.end();) {
+        if ((*i).FramesLeft == m_NumCollisionFrames) {
+            i->A->OnCollisionBegin(i->B);
+            i->B->OnCollisionBegin(i->A);
         }
-        (*i).framesLeft = (*i).framesLeft - 1;
-        if ((*i).framesLeft < 0) {
-            i->a->OnCollisionEnd(i->b);
-            i->b->OnCollisionEnd(i->a);
-            i = allCollisions.erase(i);
+        (*i).FramesLeft = (*i).FramesLeft - 1;
+        if ((*i).FramesLeft < 0) {
+            i->A->OnCollisionEnd(i->B);
+            i->B->OnCollisionEnd(i->A);
+            i = m_AllCollisions.erase(i);
         } else {
             ++i;
         }
@@ -138,7 +130,7 @@ void PhysicsSystem::UpdateCollisionList() {
 void PhysicsSystem::UpdateObjectAABBs() {
     std::vector<GameObject*>::const_iterator first;
     std::vector<GameObject*>::const_iterator last;
-    gameWorld.GetObjectIterators(first, last);
+    m_GameWorld.GetObjectIterators(first, last);
 
     for (auto i = first; i != last; ++i) {
         (*i)->UpdateBroadphaseAABB();
@@ -209,7 +201,7 @@ ones in the next 'game' frame.
 void PhysicsSystem::ClearForces() {
     std::vector<GameObject*>::const_iterator first;
     std::vector<GameObject*>::const_iterator last;
-    gameWorld.GetObjectIterators(first, last);
+    m_GameWorld.GetObjectIterators(first, last);
 
     for (auto i = first; i != last; ++i) {
         //Clear our object's forces for the next frame
@@ -228,7 +220,7 @@ us to model springs and ropes etc.
 void PhysicsSystem::UpdateConstraints(float dt) {
     std::vector<Constraint*>::const_iterator first;
     std::vector<Constraint*>::const_iterator last;
-    gameWorld.GetConstraintIterators(first, last);
+    m_GameWorld.GetConstraintIterators(first, last);
 
     for (auto i = first; i != last; ++i) {
         (*i)->UpdateConstraint(dt);

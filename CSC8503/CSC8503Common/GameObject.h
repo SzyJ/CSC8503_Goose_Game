@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Transform.h"
 #include "CollisionVolume.h"
 
@@ -12,55 +13,65 @@ using std::vector;
 
 namespace NCL {
     namespace CSC8503 {
-        class NetworkObject;
 
+        class NetworkObject;
         class GameObject {
         public:
-            GameObject(string name = "");
-            ~GameObject();
+           GameObject(string objectName = "")
+                : m_Name(objectName), m_IsActive(true) {
+                m_Name = objectName;
+                m_IsActive = true;
+            }
+
+            virtual ~GameObject() {
+                delete m_BoundingVolume;
+                delete m_PhysicsObject;
+                delete m_RenderObject;
+                delete m_NetworkObject;
+            }
 
             void SetBoundingVolume(CollisionVolume* vol) {
-                boundingVolume = vol;
+                m_BoundingVolume = vol;
             }
 
             const CollisionVolume* GetBoundingVolume() const {
-                return boundingVolume;
+                return m_BoundingVolume;
             }
 
             bool IsActive() const {
-                return isActive;
+                return m_IsActive;
             }
 
             const Transform& GetConstTransform() const {
-                return transform;
+                return m_Transform;
             }
 
             Transform& GetTransform() {
-                return transform;
+                return m_Transform;
             }
 
             RenderObject* GetRenderObject() const {
-                return renderObject;
+                return m_RenderObject;
             }
 
             PhysicsObject* GetPhysicsObject() const {
-                return physicsObject;
+                return m_PhysicsObject;
             }
 
             NetworkObject* GetNetworkObject() const {
-                return networkObject;
+                return m_NetworkObject;
             }
 
             void SetRenderObject(RenderObject* newObject) {
-                renderObject = newObject;
+                m_RenderObject = newObject;
             }
 
             void SetPhysicsObject(PhysicsObject* newObject) {
-                physicsObject = newObject;
+                m_PhysicsObject = newObject;
             }
 
             const string& GetName() const {
-                return name;
+                return m_Name;
             }
 
             virtual void OnCollisionBegin(GameObject* otherObject) {
@@ -76,21 +87,15 @@ namespace NCL {
             void UpdateBroadphaseAABB();
 
         protected:
-            Transform transform;
-
-            CollisionVolume* boundingVolume;
-
-            PhysicsObject* physicsObject;
-
-            RenderObject* renderObject;
-
-            NetworkObject* networkObject;
-
-            bool isActive;
-
-            string name;
-
-            Vector3 broadphaseAABB;
+            Transform m_Transform;
+            CollisionVolume* m_BoundingVolume = nullptr;
+            PhysicsObject* m_PhysicsObject = nullptr;
+            RenderObject* m_RenderObject = nullptr;
+            NetworkObject* m_NetworkObject = nullptr;
+            bool m_IsActive;
+            string m_Name;
+            Vector3 m_BroadphaseAABB;
         };
+
     }
 }

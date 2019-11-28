@@ -1,9 +1,11 @@
 #pragma once
+
 #include "../../Common/Vector3.h"
 
 using namespace NCL::Maths;
 
 namespace NCL {
+
     enum class BoundingType {
         AABB,
         OOBB,
@@ -13,10 +15,10 @@ namespace NCL {
 
     class BoundingVolume {
     public:
-        BoundingVolume();
-        ~BoundingVolume();
+        BoundingVolume() = default;
+        ~BoundingVolume() = default;
 
-
-        BoundingType type;
+        BoundingType m_Type;
     };
+
 }
