@@ -11,79 +11,81 @@ using std::vector;
 using namespace NCL::Maths;
 
 namespace NCL {
-	namespace CSC8503 {
-		class Transform
-		{
-		public:
-			Transform();
-			Transform(const Vector3& position, Transform* parent = nullptr);
-			~Transform();
+    namespace CSC8503 {
+        class Transform {
+        public:
+            Transform();
+            Transform(const Vector3& position, Transform* parent = nullptr);
+            ~Transform();
 
-			void SetWorldPosition(const Vector3& worldPos);
-			void SetLocalPosition(const Vector3& localPos);
+            void SetWorldPosition(const Vector3& worldPos);
+            void SetLocalPosition(const Vector3& localPos);
 
-			void SetWorldScale(const Vector3& worldScale);
-			void SetLocalScale(const Vector3& localScale);
+            void SetWorldScale(const Vector3& worldScale);
+            void SetLocalScale(const Vector3& localScale);
 
-			Transform* GetParent() const {
-				return parent;
-			}
+            Transform* GetParent() const {
+                return parent;
+            }
 
-			void SetParent(Transform* newParent) {
-				parent = newParent;
-			}
+            void SetParent(Transform* newParent) {
+                parent = newParent;
+            }
 
-			Matrix4 GetWorldMatrix() const {
-				return worldMatrix;
-			}
+            Matrix4 GetWorldMatrix() const {
+                return worldMatrix;
+            }
 
-			Matrix4 GetLocalMatrix() const {
-				return localMatrix;
-			}
+            Matrix4 GetLocalMatrix() const {
+                return localMatrix;
+            }
 
-			Vector3 GetWorldPosition() const {
-				return worldMatrix.GetPositionVector();
-			}
+            Vector3 GetWorldPosition() const {
+                return worldMatrix.GetPositionVector();
+            }
 
-			Vector3 GetLocalPosition() const {
-				return localPosition;
-			}
+            Vector3 GetLocalPosition() const {
+                return localPosition;
+            }
 
-			Vector3 GetLocalScale() const {
-				return localScale;
-			}
+            Vector3 GetLocalScale() const {
+                return localScale;
+            }
 
-			Quaternion GetLocalOrientation() const {
-				return localOrientation;
-			}
+            Quaternion GetLocalOrientation() const {
+                return localOrientation;
+            }
 
-			void SetLocalOrientation(const Quaternion& newOr) {
-				localOrientation = newOr;
-			}
+            void SetLocalOrientation(const Quaternion& newOr) {
+                localOrientation = newOr;
+            }
 
-			Quaternion GetWorldOrientation() const {
-				return worldOrientation;
-			}
+            Quaternion GetWorldOrientation() const {
+                return worldOrientation;
+            }
 
-			Matrix3 GetInverseWorldOrientationMat() const {
-				return worldOrientation.Conjugate().ToMatrix3();
-			}
+            Matrix3 GetInverseWorldOrientationMat() const {
+                return worldOrientation.Conjugate().ToMatrix3();
+            }
 
-			void UpdateMatrices();
+            void UpdateMatrices();
 
-		protected:
-			Matrix4		localMatrix;
-			Matrix4		worldMatrix;
+        protected:
+            Matrix4 localMatrix;
 
-			Vector3		localPosition;
-			Vector3		localScale;
-			Quaternion	localOrientation;
-			Quaternion  worldOrientation;
+            Matrix4 worldMatrix;
 
-			Transform*	parent;
+            Vector3 localPosition;
 
-			vector<Transform*> children;
-		};
-	}
+            Vector3 localScale;
+
+            Quaternion localOrientation;
+
+            Quaternion worldOrientation;
+
+            Transform* parent;
+
+            vector<Transform*> children;
+        };
+    }
 }
-

@@ -5,53 +5,58 @@
 #include "../../Common/Vector4.h"
 
 namespace NCL {
-	using namespace NCL::Rendering;
+    using namespace NCL::Rendering;
 
-	class MeshGeometry;
-	namespace CSC8503 {
-		class Transform;
-		using namespace Maths;
+    class MeshGeometry;
 
-		class RenderObject
-		{
-		public:
-			RenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader);
-			~RenderObject();
+    namespace CSC8503 {
+        class Transform;
 
-			void SetDefaultTexture(TextureBase* t) {
-				texture = t;
-			}
+        using namespace Maths;
 
-			TextureBase* GetDefaultTexture() const {
-				return texture;
-			}
+        class RenderObject {
+        public:
+            RenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader);
+            ~RenderObject();
 
-			MeshGeometry*	GetMesh() const {
-				return mesh;
-			}
+            void SetDefaultTexture(TextureBase* t) {
+                texture = t;
+            }
 
-			Transform*		GetTransform() const {
-				return transform;
-			}
+            TextureBase* GetDefaultTexture() const {
+                return texture;
+            }
 
-			ShaderBase*		GetShader() const {
-				return shader;
-			}
+            MeshGeometry* GetMesh() const {
+                return mesh;
+            }
 
-			void SetColour(const Vector4& c) {
-				colour = c;
-			}
+            Transform* GetTransform() const {
+                return transform;
+            }
 
-			Vector4 GetColour() const {
-				return colour;
-			}
+            ShaderBase* GetShader() const {
+                return shader;
+            }
 
-		protected:
-			MeshGeometry*	mesh;
-			TextureBase*	texture;
-			ShaderBase*		shader;
-			Transform*		transform;
-			Vector4			colour;
-		};
-	}
+            void SetColour(const Vector4& c) {
+                colour = c;
+            }
+
+            Vector4 GetColour() const {
+                return colour;
+            }
+
+        protected:
+            MeshGeometry* mesh;
+
+            TextureBase* texture;
+
+            ShaderBase* shader;
+
+            Transform* transform;
+
+            Vector4 colour;
+        };
+    }
 }

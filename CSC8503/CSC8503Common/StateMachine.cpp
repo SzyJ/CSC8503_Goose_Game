@@ -4,24 +4,14 @@
 
 using namespace NCL::CSC8503;
 
-StateMachine::StateMachine()
-{
-	activeState = nullptr;
+StateMachine::StateMachine() {
+    activeState = nullptr;
 }
 
-StateMachine::~StateMachine()
-{
+StateMachine::~StateMachine() {}
 
-}
+void StateMachine::AddState(State* s) {}
 
-void StateMachine::AddState(State* s) {
+void StateMachine::AddTransition(StateTransition* t) {}
 
-}
-
-void StateMachine::AddTransition(StateTransition* t) {
-
-}
-
-void StateMachine::Update() {
-
-}
+void StateMachine::Update() {}

@@ -2,47 +2,53 @@
 #include "TutorialGame.h"
 
 namespace NCL {
-	namespace CSC8503 {
-		class GameServer;
-		class GameClient;
-		class NetworkPlayer;
+    namespace CSC8503 {
+        class GameServer;
 
-		class NetworkedGame : public TutorialGame, public PacketReceiver {
-		public:
-			NetworkedGame();
-			~NetworkedGame();
+        class GameClient;
 
-			void StartAsServer();
-			void StartAsClient(char a, char b, char c, char d);
+        class NetworkPlayer;
 
-			void UpdateGame(float dt) override;
+        class NetworkedGame : public TutorialGame, public PacketReceiver {
+        public:
+            NetworkedGame();
+            ~NetworkedGame();
 
-			void SpawnPlayer();
+            void StartAsServer();
+            void StartAsClient(char a, char b, char c, char d);
 
-			void StartLevel();
+            void UpdateGame(float dt) override;
 
-			void ReceivePacket(int type, GamePacket* payload, int source) override;
+            void SpawnPlayer();
 
-			void OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b);
+            void StartLevel();
 
-		protected:
-			void UpdateAsServer(float dt);
-			void UpdateAsClient(float dt);
+            void ReceivePacket(int type, GamePacket* payload, int source) override;
 
-			void BroadcastSnapshot(bool deltaFrame);
-			void UpdateMinimumState();
-			std::map<int, int> stateIDs;
+            void OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b);
 
-			GameServer* thisServer;
-			GameClient* thisClient;
-			float timeToNextPacket;
-			int packetsToSnapshot;
+        protected:
+            void UpdateAsServer(float dt);
+            void UpdateAsClient(float dt);
 
-			std::vector<NetworkObject*> networkObjects;
+            void BroadcastSnapshot(bool deltaFrame);
+            void UpdateMinimumState();
 
-			std::map<int, GameObject*> serverPlayers;
-			GameObject* localPlayer;
-		};
-	}
+            std::map<int, int> stateIDs;
+
+            GameServer* thisServer;
+
+            GameClient* thisClient;
+
+            float timeToNextPacket;
+
+            int packetsToSnapshot;
+
+            std::vector<NetworkObject*> networkObjects;
+
+            std::map<int, GameObject*> serverPlayers;
+
+            GameObject* localPlayer;
+        };
+    }
 }
-

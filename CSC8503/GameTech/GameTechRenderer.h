@@ -7,42 +7,48 @@
 #include "../CSC8503Common/GameWorld.h"
 
 namespace NCL {
-	class Maths::Vector3;
-	class Maths::Vector4;
-	namespace CSC8503 {
-		class RenderObject;
+    class Maths::Vector3;
 
-		class GameTechRenderer : public OGLRenderer	{
-		public:
-			GameTechRenderer(GameWorld& world);
-			~GameTechRenderer();
+    class Maths::Vector4;
 
-		protected:
-			void RenderFrame()	override;
+    namespace CSC8503 {
+        class RenderObject;
 
-			OGLShader*		defaultShader;
+        class GameTechRenderer : public OGLRenderer {
+        public:
+            GameTechRenderer(GameWorld& world);
+            ~GameTechRenderer();
 
-			GameWorld&	gameWorld;
+        protected:
+            void RenderFrame() override;
 
-			void BuildObjectList();
-			void SortObjectList();
-			void RenderShadowMap();
-			void RenderCamera(); 
+            OGLShader* defaultShader;
 
-			void SetupDebugMatrix(OGLShader*s) override;
+            GameWorld& gameWorld;
 
-			vector<const RenderObject*> activeObjects;
+            void BuildObjectList();
+            void SortObjectList();
+            void RenderShadowMap();
+            void RenderCamera();
 
-			//shadow mapping things
-			OGLShader*	shadowShader;
-			GLuint		shadowTex;
-			GLuint		shadowFBO;
-			Matrix4     shadowMatrix;
+            void SetupDebugMatrix(OGLShader* s) override;
 
-			Vector4		lightColour;
-			float		lightRadius;
-			Vector3		lightPosition;
-		};
-	}
+            vector<const RenderObject*> activeObjects;
+
+            //shadow mapping things
+            OGLShader* shadowShader;
+
+            GLuint shadowTex;
+
+            GLuint shadowFBO;
+
+            Matrix4 shadowMatrix;
+
+            Vector4 lightColour;
+
+            float lightRadius;
+
+            Vector3 lightPosition;
+        };
+    }
 }
-

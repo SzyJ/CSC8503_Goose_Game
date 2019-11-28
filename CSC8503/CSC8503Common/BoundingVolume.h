@@ -4,21 +4,19 @@
 using namespace NCL::Maths;
 
 namespace NCL {
-	enum class BoundingType {
-		AABB,
-		OOBB,
-		Sphere,
-		Mesh
-	};
+    enum class BoundingType {
+        AABB,
+        OOBB,
+        Sphere,
+        Mesh
+    };
 
-	class BoundingVolume
-	{
-	public:
-		BoundingVolume();
-		~BoundingVolume();
+    class BoundingVolume {
+    public:
+        BoundingVolume();
+        ~BoundingVolume();
 
 
-		BoundingType type;
-	};
+        BoundingType type;
+    };
 }
-

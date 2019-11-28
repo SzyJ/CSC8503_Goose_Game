@@ -5,39 +5,43 @@
 #include "NetworkBase.h"
 
 namespace NCL {
-	namespace CSC8503 {
-		class GameWorld;
-		class GameServer : public NetworkBase {
-		public:
-			GameServer(int onPort, int maxClients);
-			~GameServer();
+    namespace CSC8503 {
+        class GameWorld;
 
-			bool Initialise();
-			void Shutdown();
+        class GameServer : public NetworkBase {
+        public:
+            GameServer(int onPort, int maxClients);
+            ~GameServer();
 
-			void SetGameWorld(GameWorld &g);
+            bool Initialise();
+            void Shutdown();
 
-			//void ThreadedUpdate();
+            void SetGameWorld(GameWorld& g);
 
-			bool SendGlobalPacket(int msgID);
-			bool SendGlobalPacket(GamePacket& packet);
+            //void ThreadedUpdate();
 
-			virtual void UpdateServer();
+            bool SendGlobalPacket(int msgID);
+            bool SendGlobalPacket(GamePacket& packet);
 
-		protected:
-			int			port;
-			int			clientMax;
-			int			clientCount;
-			GameWorld*	gameWorld;
+            virtual void UpdateServer();
 
-			//std::atomic<bool> threadAlive;
+        protected:
+            int port;
 
-			
+            int clientMax;
 
-			//std::thread updateThread;
+            int clientCount;
 
-			int incomingDataRate;
-			int outgoingDataRate;
-		};
-	}
+            GameWorld* gameWorld;
+
+            //std::atomic<bool> threadAlive;
+
+
+            //std::thread updateThread;
+
+            int incomingDataRate;
+
+            int outgoingDataRate;
+        };
+    }
 }

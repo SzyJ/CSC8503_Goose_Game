@@ -4,38 +4,42 @@
 #include <string>
 
 namespace NCL {
-	class Debug
-	{
-	public:
-		static void Print(const std::string& text, const Vector2&pos, const Vector4& colour = Vector4(1, 1, 1, 1));
-		static void DrawLine(const Vector3& startpoint, const Vector3& endpoint, const Vector4& colour = Vector4(1, 1, 1, 1));
+    class Debug {
+    public:
+        static void Print(const std::string& text, const Vector2& pos, const Vector4& colour = Vector4(1, 1, 1, 1));
+        static void DrawLine(const Vector3& startpoint, const Vector3& endpoint, const Vector4& colour = Vector4(1, 1, 1, 1));
 
-		static void SetRenderer(OGLRenderer* r) {
-			renderer = r;
-		}
+        static void SetRenderer(OGLRenderer* r) {
+            renderer = r;
+        }
 
-		static void FlushRenderables();
+        static void FlushRenderables();
 
-	protected:
-		struct DebugStringEntry {
-			std::string	data;
-			Vector2 position;
-			Vector4 colour;
-		};
+    protected:
+        struct DebugStringEntry {
+            std::string data;
 
-		struct DebugLineEntry {
-			Vector3 start;
-			Vector3 end;
-			Vector4 colour;
-		};
+            Vector2 position;
 
-		Debug() {}
-		~Debug() {}
+            Vector4 colour;
+        };
 
-		static std::vector<DebugStringEntry>	stringEntries;
-		static std::vector<DebugLineEntry>	lineEntries;
+        struct DebugLineEntry {
+            Vector3 start;
 
-		static OGLRenderer* renderer;
-	};
+            Vector3 end;
+
+            Vector4 colour;
+        };
+
+        Debug() {}
+
+        ~Debug() {}
+
+        static std::vector<DebugStringEntry> stringEntries;
+
+        static std::vector<DebugLineEntry> lineEntries;
+
+        static OGLRenderer* renderer;
+    };
 }
-

@@ -3,30 +3,32 @@
 #include <map>
 
 namespace NCL {
-	namespace CSC8503 {
+    namespace CSC8503 {
 
-		class State;
-		class StateTransition;
+        class State;
 
-		typedef std::multimap<State*, StateTransition*> TransitionContainer;
-		typedef TransitionContainer::iterator TransitionIterator;
+        class StateTransition;
 
-		class StateMachine	{
-		public:
-			StateMachine();
-			~StateMachine();
+        typedef std::multimap<State*, StateTransition*> TransitionContainer;
 
-			void AddState(State* s);
-			void AddTransition(StateTransition* t);
+        typedef TransitionContainer::iterator TransitionIterator;
 
-			void Update();
+        class StateMachine {
+        public:
+            StateMachine();
+            ~StateMachine();
 
-		protected:
-			State * activeState;
+            void AddState(State* s);
+            void AddTransition(StateTransition* t);
 
-			std::vector<State*> allStates;
+            void Update();
 
-			TransitionContainer allTransitions;
-		};
-	}
+        protected:
+            State* activeState;
+
+            std::vector<State*> allStates;
+
+            TransitionContainer allTransitions;
+        };
+    }
 }

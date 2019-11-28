@@ -2,11 +2,7 @@
 
 using namespace NCL;
 
-BoundingVolume::BoundingVolume()
-{
-}
+BoundingVolume::BoundingVolume() {}
 
 
-BoundingVolume::~BoundingVolume()
-{
-}
+BoundingVolume::~BoundingVolume() {}

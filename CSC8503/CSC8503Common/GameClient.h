@@ -5,25 +5,26 @@
 #include <atomic>
 
 namespace NCL {
-	namespace CSC8503 {
-		class GameObject;
-		class GameClient : public NetworkBase {
-		public:
-			GameClient();
-			~GameClient();
+    namespace CSC8503 {
+        class GameObject;
 
-			bool Connect(uint8_t a, uint8_t b, uint8_t c, uint8_t d, int portNum);
+        class GameClient : public NetworkBase {
+        public:
+            GameClient();
+            ~GameClient();
 
-			void SendPacket(GamePacket&  payload);
+            bool Connect(uint8_t a, uint8_t b, uint8_t c, uint8_t d, int portNum);
 
-			void UpdateClient();
-		protected:	
-			//void ThreadedUpdate();
+            void SendPacket(GamePacket& payload);
 
-			ENetPeer*	netPeer;
-			//std::atomic<bool>	threadAlive;
-			//std::thread			updateThread;
-		};
-	}
+            void UpdateClient();
+        protected:
+            //void ThreadedUpdate();
+
+            ENetPeer* netPeer;
+
+            //std::atomic<bool>    threadAlive;
+            //std::thread            updateThread;
+        };
+    }
 }
-

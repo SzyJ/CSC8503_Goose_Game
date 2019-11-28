@@ -2,22 +2,20 @@
 #include <stack>
 
 namespace NCL {
-	namespace CSC8503 {
-		class PushdownState;
+    namespace CSC8503 {
+        class PushdownState;
 
-		class PushdownMachine
-		{
-		public:
-			PushdownMachine();
-			~PushdownMachine();
+        class PushdownMachine {
+        public:
+            PushdownMachine();
+            ~PushdownMachine();
 
-			void Update();
+            void Update();
 
-		protected:
-			PushdownState * activeState;
+        protected:
+            PushdownState* activeState;
 
-			std::stack<PushdownState*> stateStack;
-		};
-	}
+            std::stack<PushdownState*> stateStack;
+        };
+    }
 }
-

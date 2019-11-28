@@ -11,83 +11,86 @@
 using std::vector;
 
 namespace NCL {
-	namespace CSC8503 {
-		class NetworkObject;
+    namespace CSC8503 {
+        class NetworkObject;
 
-		class GameObject	{
-		public:
-			GameObject(string name = "");
-			~GameObject();
+        class GameObject {
+        public:
+            GameObject(string name = "");
+            ~GameObject();
 
-			void SetBoundingVolume(CollisionVolume* vol) {
-				boundingVolume = vol;
-			}
+            void SetBoundingVolume(CollisionVolume* vol) {
+                boundingVolume = vol;
+            }
 
-			const CollisionVolume* GetBoundingVolume() const {
-				return boundingVolume;
-			}
+            const CollisionVolume* GetBoundingVolume() const {
+                return boundingVolume;
+            }
 
-			bool IsActive() const {
-				return isActive;
-			}
+            bool IsActive() const {
+                return isActive;
+            }
 
-			const Transform& GetConstTransform() const {
-				return transform;
-			}
+            const Transform& GetConstTransform() const {
+                return transform;
+            }
 
-			Transform& GetTransform() {
-				return transform;
-			}
+            Transform& GetTransform() {
+                return transform;
+            }
 
-			RenderObject* GetRenderObject() const {
-				return renderObject;
-			}
+            RenderObject* GetRenderObject() const {
+                return renderObject;
+            }
 
-			PhysicsObject* GetPhysicsObject() const {
-				return physicsObject;
-			}
+            PhysicsObject* GetPhysicsObject() const {
+                return physicsObject;
+            }
 
-			NetworkObject* GetNetworkObject() const {
-				return networkObject;
-			}
+            NetworkObject* GetNetworkObject() const {
+                return networkObject;
+            }
 
-			void SetRenderObject(RenderObject* newObject) {
-				renderObject = newObject;
-			}
+            void SetRenderObject(RenderObject* newObject) {
+                renderObject = newObject;
+            }
 
-			void SetPhysicsObject(PhysicsObject* newObject) {
-				physicsObject = newObject;
-			}
+            void SetPhysicsObject(PhysicsObject* newObject) {
+                physicsObject = newObject;
+            }
 
-			const string& GetName() const {
-				return name;
-			}
+            const string& GetName() const {
+                return name;
+            }
 
-			virtual void OnCollisionBegin(GameObject* otherObject) {
-				//std::cout << "OnCollisionBegin event occured!\n";
-			}
+            virtual void OnCollisionBegin(GameObject* otherObject) {
+                //std::cout << "OnCollisionBegin event occured!\n";
+            }
 
-			virtual void OnCollisionEnd(GameObject* otherObject) {
-				//std::cout << "OnCollisionEnd event occured!\n";
-			}
+            virtual void OnCollisionEnd(GameObject* otherObject) {
+                //std::cout << "OnCollisionEnd event occured!\n";
+            }
 
-			bool GetBroadphaseAABB(Vector3&outsize) const;
+            bool GetBroadphaseAABB(Vector3& outsize) const;
 
-			void UpdateBroadphaseAABB();
+            void UpdateBroadphaseAABB();
 
-		protected:
-			Transform			transform;
+        protected:
+            Transform transform;
 
-			CollisionVolume*	boundingVolume;
-			PhysicsObject*		physicsObject;
-			RenderObject*		renderObject;
-			NetworkObject*		networkObject;
+            CollisionVolume* boundingVolume;
 
-			bool	isActive;
-			string	name;
+            PhysicsObject* physicsObject;
 
-			Vector3 broadphaseAABB;
-		};
-	}
+            RenderObject* renderObject;
+
+            NetworkObject* networkObject;
+
+            bool isActive;
+
+            string name;
+
+            Vector3 broadphaseAABB;
+        };
+    }
 }
-

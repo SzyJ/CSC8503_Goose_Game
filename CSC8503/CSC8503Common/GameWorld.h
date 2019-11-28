@@ -3,71 +3,76 @@
 #include "Ray.h"
 #include "CollisionDetection.h"
 #include "QuadTree.h"
+
 namespace NCL {
-		class Camera;
-		using Maths::Ray;
-	namespace CSC8503 {
-		class GameObject;
-		class Constraint;
+    class Camera;
 
-		typedef std::function<void(GameObject*)> GameObjectFunc;
-		typedef std::vector<GameObject*>::const_iterator GameObjectIterator;
+    using Maths::Ray;
 
-		class GameWorld	{
-		public:
-			GameWorld();
-			~GameWorld();
+    namespace CSC8503 {
+        class GameObject;
 
-			void Clear();
-			void ClearAndErase();
+        class Constraint;
 
-			void AddGameObject(GameObject* o);
-			void RemoveGameObject(GameObject* o);
+        typedef std::function<void(GameObject*)> GameObjectFunc;
 
-			void AddConstraint(Constraint* c);
-			void RemoveConstraint(Constraint* c);
+        typedef std::vector<GameObject*>::const_iterator GameObjectIterator;
 
-			Camera* GetMainCamera() const {
-				return mainCamera;
-			}
+        class GameWorld {
+        public:
+            GameWorld();
+            ~GameWorld();
 
-			void ShuffleConstraints(bool state) {
-				shuffleConstraints = state;
-			}
+            void Clear();
+            void ClearAndErase();
 
-			void ShuffleObjects(bool state) {
-				shuffleObjects = state;
-			}
+            void AddGameObject(GameObject* o);
+            void RemoveGameObject(GameObject* o);
 
-			bool Raycast(Ray& r, RayCollision& closestCollision, bool closestObject = false) const;
+            void AddConstraint(Constraint* c);
+            void RemoveConstraint(Constraint* c);
 
-			virtual void UpdateWorld(float dt);
+            Camera* GetMainCamera() const {
+                return mainCamera;
+            }
 
-			void OperateOnContents(GameObjectFunc f);
+            void ShuffleConstraints(bool state) {
+                shuffleConstraints = state;
+            }
 
-			void GetObjectIterators(
-				GameObjectIterator& first,
-				GameObjectIterator& last) const;
+            void ShuffleObjects(bool state) {
+                shuffleObjects = state;
+            }
 
-			void GetConstraintIterators(
-				std::vector<Constraint*>::const_iterator& first,
-				std::vector<Constraint*>::const_iterator& last) const;
+            bool Raycast(Ray& r, RayCollision& closestCollision, bool closestObject = false) const;
 
-		protected:
-			void UpdateTransforms();
-			void UpdateQuadTree();
+            virtual void UpdateWorld(float dt);
 
-			std::vector<GameObject*> gameObjects;
+            void OperateOnContents(GameObjectFunc f);
 
-			std::vector<Constraint*> constraints;
+            void GetObjectIterators(
+                GameObjectIterator& first,
+                GameObjectIterator& last) const;
 
-			QuadTree<GameObject*>* quadTree;
+            void GetConstraintIterators(
+                std::vector<Constraint*>::const_iterator& first,
+                std::vector<Constraint*>::const_iterator& last) const;
 
-			Camera* mainCamera;
+        protected:
+            void UpdateTransforms();
+            void UpdateQuadTree();
 
-			bool shuffleConstraints;
-			bool shuffleObjects;
-		};
-	}
+            std::vector<GameObject*> gameObjects;
+
+            std::vector<Constraint*> constraints;
+
+            QuadTree<GameObject*>* quadTree;
+
+            Camera* mainCamera;
+
+            bool shuffleConstraints;
+
+            bool shuffleObjects;
+        };
+    }
 }
-

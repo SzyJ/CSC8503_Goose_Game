@@ -2,14 +2,11 @@
 
 using namespace NCL;
 
-BoundingAABB::BoundingAABB(const Vector3& halfDims)
-{
-	type = BoundingType::AABB;
+BoundingAABB::BoundingAABB(const Vector3& halfDims) {
+    type = BoundingType::AABB;
 
-	this->halfSizes = halfDims;
+    this->halfSizes = halfDims;
 }
 
 
-BoundingAABB::~BoundingAABB()
-{
-}
+BoundingAABB::~BoundingAABB() {}

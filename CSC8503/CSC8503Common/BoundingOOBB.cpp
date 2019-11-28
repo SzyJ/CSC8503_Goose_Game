@@ -2,12 +2,9 @@
 
 using namespace NCL;
 
-BoundingOOBB::BoundingOOBB()
-{
-	type = BoundingType::OOBB;
+BoundingOOBB::BoundingOOBB() {
+    type = BoundingType::OOBB;
 }
 
 
-BoundingOOBB::~BoundingOOBB()
-{
-}
+BoundingOOBB::~BoundingOOBB() {}

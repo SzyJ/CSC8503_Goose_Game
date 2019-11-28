@@ -1,69 +1,71 @@
 #pragma once
 
 namespace NCL {
-	namespace CSC8503 {
+    namespace CSC8503 {
 
-		class State;
+        class State;
 
-		class StateTransition
-		{
-		public:
-			virtual bool CanTransition() const = 0;
+        class StateTransition {
+        public:
+            virtual bool CanTransition() const = 0;
 
-			State* GetDestinationState()  const {
-				return destinationState;
-			}
+            State* GetDestinationState() const {
+                return destinationState;
+            }
 
-			State* GetSourceState() const {
-				return sourceState;
-			}
+            State* GetSourceState() const {
+                return sourceState;
+            }
 
-		protected:
-			State * sourceState;
-			State * destinationState;
-		};
+        protected:
+            State* sourceState;
 
-		template <class T, class U>
-		class GenericTransition : public StateTransition
-		{
-		public:
-			typedef bool(*GenericTransitionFunc)(T, U);
-			GenericTransition(GenericTransitionFunc f, T testData, U otherData, State* srcState, State* destState) :
-				dataA(testData), dataB(otherData)
-			{
-				func				= f;
-				sourceState			= srcState;		//
-				destinationState	= destState;
-			}
-			~GenericTransition() {}
+            State* destinationState;
+        };
 
-			virtual bool CanTransition() const override{
-				if (func) {
-					return func(dataA, dataB);
-				}
-				return false;
-			}
-			static bool GreaterThanTransition(T dataA, U dataB) {
-				return dataA > dataB;
-			}
+        template <class T, class U>
+        class GenericTransition : public StateTransition {
+        public:
+            typedef bool (*GenericTransitionFunc)(T, U);
 
-			static bool LessThanTransition(T dataA, U dataB) {
-				return dataA < dataB;
-			}
+            GenericTransition(GenericTransitionFunc f, T testData, U otherData, State* srcState, State* destState) :
+                dataA(testData), dataB(otherData) {
+                func = f;
+                sourceState = srcState; //
+                destinationState = destState;
+            }
 
-			static bool EqualsTransition(T dataA, U dataB) {
-				return dataA == dataB;
-			}
+            ~GenericTransition() {}
 
-			static bool NotEqualsTransition(T dataA, U dataB) {
-				return dataA != dataB;
-			}
+            virtual bool CanTransition() const override {
+                if (func) {
+                    return func(dataA, dataB);
+                }
+                return false;
+            }
 
-		protected:
-			GenericTransitionFunc  func;
-			T dataA;
-			U dataB;
-		};
-	}
+            static bool GreaterThanTransition(T dataA, U dataB) {
+                return dataA > dataB;
+            }
+
+            static bool LessThanTransition(T dataA, U dataB) {
+                return dataA < dataB;
+            }
+
+            static bool EqualsTransition(T dataA, U dataB) {
+                return dataA == dataB;
+            }
+
+            static bool NotEqualsTransition(T dataA, U dataB) {
+                return dataA != dataB;
+            }
+
+        protected:
+            GenericTransitionFunc func;
+
+            T dataA;
+
+            U dataB;
+        };
+    }
 }
-

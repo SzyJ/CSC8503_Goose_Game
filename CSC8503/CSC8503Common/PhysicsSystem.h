@@ -3,56 +3,66 @@
 #include <set>
 
 namespace NCL {
-	namespace CSC8503 {
-		class PhysicsSystem	{
-		public:
-			PhysicsSystem(GameWorld& g);
-			~PhysicsSystem();
+    namespace CSC8503 {
 
-			void Clear();
+        class PhysicsSystem {
+        public:
+            PhysicsSystem(GameWorld& g);
+            ~PhysicsSystem() = default;
 
-			void Update(float dt);
+            void Clear();
 
-			void UseGravity(bool state) {
-				applyGravity = state;
-			}
+            void Update(float dt);
 
-			void SetGlobalDamping(float d) {
-				globalDamping = d;
-			}
+            void UseGravity(bool state) {
+                applyGravity = state;
+            }
 
-			void SetGravity(const Vector3& g);
-		protected:
-			void BasicCollisionDetection();
-			void BroadPhase();
-			void NarrowPhase();
+            void SetGlobalDamping(float d) {
+                globalDamping = d;
+            }
 
-			void ClearForces();
+            void SetGravity(const Vector3& g);
 
-			void IntegrateAccel(float dt);
-			void IntegrateVelocity(float dt);
+        protected:
+            void BasicCollisionDetection();
+            void BroadPhase();
+            void NarrowPhase();
 
-			void UpdateConstraints(float dt);
+            void ClearForces();
 
-			void UpdateCollisionList();
-			void UpdateObjectAABBs();
+            void IntegrateAccel(float dt);
+            void IntegrateVelocity(float dt);
 
-			void ImpulseResolveCollision(GameObject& a , GameObject&b, CollisionDetection::ContactPoint& p) const;
+            void UpdateConstraints(float dt);
 
-			GameWorld& gameWorld;
+            void UpdateCollisionList();
+            void UpdateObjectAABBs();
 
-			bool	applyGravity;
-			Vector3 gravity;
-			float	dTOffset;
-			float	globalDamping;
-			float	frameDT;
+            void ImpulseResolveCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const;
 
-			std::set<CollisionDetection::CollisionInfo> allCollisions;
-			std::set<CollisionDetection::CollisionInfo>		broadphaseCollisions;
-			std::vector<CollisionDetection::CollisionInfo>	broadphaseCollisionsVec;
-			bool useBroadPhase		= true;
-			int numCollisionFrames	= 5;
-		};
-	}
+            GameWorld& gameWorld;
+
+            bool applyGravity;
+
+            Vector3 gravity;
+
+            float dTOffset;
+
+            float globalDamping;
+
+            float frameDT;
+
+            std::set<CollisionDetection::CollisionInfo> allCollisions;
+
+            std::set<CollisionDetection::CollisionInfo> broadphaseCollisions;
+
+            std::vector<CollisionDetection::CollisionInfo> broadphaseCollisionsVec;
+
+            bool useBroadPhase = true;
+
+            int numCollisionFrames = 5;
+        };
+
+    }
 }
-

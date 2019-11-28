@@ -15,22 +15,15 @@
 using namespace NCL;
 using namespace CSC8503;
 
-void TestStateMachine() {
-}
+void TestStateMachine() {}
 
-void TestNetworking() {
-}
+void TestNetworking() {}
 
 vector<Vector3> testNodes;
 
-void TestPathfinding() {
+void TestPathfinding() {}
 
-}
-
-void DisplayPathfinding() {
-
-}
-
+void DisplayPathfinding() {}
 
 
 /*
@@ -46,40 +39,40 @@ hide or show the
 
 */
 int main() {
-	Window*w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
+    Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
 
-	if (!w->HasInitialised()) {
-		return -1;
-	}	
+    if (!w->HasInitialised()) {
+        return -1;
+    }
 
-	//TestStateMachine();
-	//TestNetworking();
-	//TestPathfinding();
-	
-	w->ShowOSPointer(false);
-	w->LockMouseToWindow(true);
+    //TestStateMachine();
+    //TestNetworking();
+    //TestPathfinding();
 
-	TutorialGame* g = new TutorialGame();
+    w->ShowOSPointer(false);
+    w->LockMouseToWindow(true);
 
-	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
-		float dt = w->GetTimer()->GetTimeDeltaSeconds();
+    TutorialGame* g = new TutorialGame();
 
-		if (dt > 1.0f) {
-			std::cout << "Skipping large time delta" << std::endl;
-			continue; //must have hit a breakpoint or something to have a 1 second frame time!
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PRIOR)) {
-			w->ShowConsole(true);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NEXT)) {
-			w->ShowConsole(false);
-		}
+    while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
+        float dt = w->GetTimer()->GetTimeDeltaSeconds();
 
-		DisplayPathfinding();
+        if (dt > 1.0f) {
+            std::cout << "Skipping large time delta" << std::endl;
+            continue; //must have hit a breakpoint or something to have a 1 second frame time!
+        }
+        if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PRIOR)) {
+            w->ShowConsole(true);
+        }
+        if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NEXT)) {
+            w->ShowConsole(false);
+        }
 
-		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
+        DisplayPathfinding();
 
-		g->UpdateGame(dt);
-	}
-	Window::DestroyGameWindow();
+        w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
+
+        g->UpdateGame(dt);
+    }
+    Window::DestroyGameWindow();
 }

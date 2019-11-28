@@ -5,98 +5,101 @@
 #include <functional>
 
 namespace NCL {
-	using namespace NCL::Maths;
-	namespace CSC8503 {
-		template<class T>
-		class QuadTree;
+    using namespace NCL::Maths;
 
-		template<class T>
-		struct QuadTreeEntry {
-			Vector3 pos;
-			Vector3 size;
-			T object;
+    namespace CSC8503 {
+        template <class T>
+        class QuadTree;
 
-			QuadTreeEntry(T obj, Vector3 pos, Vector3 size) {
-				object		= obj;
-				this->pos	= pos;
-				this->size	= size;
-			}
-		};
+        template <class T>
+        struct QuadTreeEntry {
+            Vector3 pos;
 
-		template<class T>
-		class QuadTreeNode	{
-		public:
-			typedef std::function<void(std::list<QuadTreeEntry<T>>&)> QuadTreeFunc;
-		protected:
-			friend class QuadTree<T>;
+            Vector3 size;
 
-			QuadTreeNode() {}
+            T object;
 
-			QuadTreeNode(Vector2 pos, Vector2 size) {
-				children		= nullptr;
-				this->position	= pos;
-				this->size		= size;
-			}
+            QuadTreeEntry(T obj, Vector3 pos, Vector3 size) {
+                object = obj;
+                this->pos = pos;
+                this->size = size;
+            }
+        };
 
-			~QuadTreeNode() {
-				delete[] children;
-			}
+        template <class T>
+        class QuadTreeNode {
+        public:
+            typedef std::function<void(std::list<QuadTreeEntry<T>>&)> QuadTreeFunc;
 
-			void Insert(T& object, const Vector3& objectPos, const Vector3& objectSize, int depthLeft, int maxSize) {
-			}
+        protected:
+            friend class QuadTree<T>;
 
-			void Split() {
-			}
+            QuadTreeNode() {}
 
-			void DebugDraw() {
-			}
+            QuadTreeNode(Vector2 pos, Vector2 size) {
+                children = nullptr;
+                this->position = pos;
+                this->size = size;
+            }
 
-			void OperateOnContents(QuadTreeFunc& func) {
-			}
+            ~QuadTreeNode() {
+                delete[] children;
+            }
 
-		protected:
-			std::list< QuadTreeEntry<T> >	contents;
+            void Insert(T& object, const Vector3& objectPos, const Vector3& objectSize, int depthLeft, int maxSize) { }
 
-			Vector2 position;
-			Vector2 size;
+            void Split() { }
 
-			QuadTreeNode<T>* children;
-		};
-	}
+            void DebugDraw() { }
+
+            void OperateOnContents(QuadTreeFunc& func) { }
+
+        protected:
+            std::list<QuadTreeEntry<T>> contents;
+
+            Vector2 position;
+
+            Vector2 size;
+
+            QuadTreeNode<T>* children;
+        };
+    }
 }
 
 
 namespace NCL {
-	using namespace NCL::Maths;
-	namespace CSC8503 {
-		template<class T>
-		class QuadTree
-		{
-		public:
-			QuadTree(Vector2 size, int maxDepth = 6, int maxSize = 5){
-				root = QuadTreeNode<T>(Vector2(), size);
-				this->maxDepth	= maxDepth;
-				this->maxSize	= maxSize;
-			}
-			~QuadTree() {
-			}
+    using namespace NCL::Maths;
 
-			void Insert(T object, const Vector3& pos, const Vector3& size) {
-				root.Insert(object, pos, size, maxDepth, maxSize);
-			}
+    namespace CSC8503 {
+        template <class T>
+        class QuadTree {
+        public:
+            QuadTree(Vector2 size, int maxDepth = 6, int maxSize = 5) {
+                root = QuadTreeNode<T>(Vector2(), size);
+                this->maxDepth = maxDepth;
+                this->maxSize = maxSize;
+            }
 
-			void DebugDraw() {
-				root.DebugDraw();
-			}
+            ~QuadTree() { }
 
-			void OperateOnContents(typename QuadTreeNode<T>::QuadTreeFunc  func) {
-				root.OperateOnContents(func);
-			}
+            void Insert(T object, const Vector3& pos, const Vector3& size) {
+                root.Insert(object, pos, size, maxDepth, maxSize);
+            }
 
-		protected:
-			QuadTreeNode<T> root;
-			int maxDepth;
-			int maxSize;
-		};
-	}
+            void DebugDraw() {
+                root.DebugDraw();
+            }
+
+            void OperateOnContents(typename QuadTreeNode<T>::QuadTreeFunc func) {
+                root.OperateOnContents(func);
+            }
+
+        protected:
+            QuadTreeNode<T> root;
+
+            int maxDepth;
+
+            int maxSize;
+        };
+    }
 }
