@@ -15,7 +15,6 @@ namespace NCL {
     public:
         CollisionVolume()
             : m_Type(VolumeType::Invalid) { }
-
         ~CollisionVolume() = default;
 
         VolumeType m_Type;

@@ -75,6 +75,45 @@ Quaternion::~Quaternion(void)
 {
 }
 
+Matrix4 Quaternion::ToMatrix4() const {
+    return Matrix4(ToMatrix3());
+}
+
+Matrix3 Quaternion::ToMatrix3() const {
+    float elements[3 * 3];
+
+    Quaternion normQuat(x, y, z, w);
+    normQuat.Normalise();
+
+    float sqw = normQuat.w * normQuat.w;
+    float sqx = normQuat.x * normQuat.x;
+    float sqy = normQuat.y * normQuat.y;
+    float sqz = normQuat.z * normQuat.z;
+
+    float invs = 1.0f / (sqx + sqy + sqz + sqw);
+
+    elements[0] = (+sqx - sqy - sqz + sqw) * invs;
+    elements[4] = (-sqx + sqy - sqz + sqw) * invs;
+    elements[8] = (-sqx - sqy + sqz + sqw) * invs;
+
+    float tmp1 = normQuat.x * normQuat.y;
+    float tmp2 = normQuat.z * normQuat.w;
+    elements[3] = 2.0f * (tmp1 - tmp2) * invs;
+    elements[1] = 2.0f * (tmp1 + tmp2) * invs;
+
+    tmp1 = normQuat.x * normQuat.z;
+    tmp2 = normQuat.y * normQuat.w;
+    elements[6] = 2.0f * (tmp1 - tmp2) * invs;
+    elements[2] = 2.0f * (tmp1 + tmp2) * invs;
+
+    tmp1 = normQuat.y * normQuat.z;
+    tmp2 = normQuat.x * normQuat.w;
+    elements[7] = 2.0f * (tmp1 - tmp2) * invs;
+    elements[5] = 2.0f * (tmp1 + tmp2) * invs;
+
+    return Matrix3(elements);
+}
+
 float Quaternion::Dot(const Quaternion &a,const Quaternion &b){
 	return (a.x * b.x) + (a.y * b.y) + (a.z * b.z) + (a.w * b.w);
 }

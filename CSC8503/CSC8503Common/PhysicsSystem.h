@@ -9,7 +9,7 @@ namespace NCL {
         class PhysicsSystem {
         public:
             PhysicsSystem(GameWorld& g)
-                : m_GameWorld(g), m_ApplyGravity(false), m_UseBroadPhase(false), m_DTOffset(0.0f), m_GlobalDamping(0.95f) {
+                : m_GameWorld(g), m_ApplyGravity(false),m_DTOffset(0.0f),  m_UseBroadPhase(false), m_GlobalDamping(0.95f) {
                 SetGravity(Vector3(0.0f, -9.8f, 0.0f));
             }
             ~PhysicsSystem() = default;

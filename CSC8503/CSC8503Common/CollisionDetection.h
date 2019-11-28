@@ -42,7 +42,7 @@ namespace NCL {
             //Advanced collision detection / resolution
             //This gets used as a quick hashing function to identify
             //unique pairs of colliding objects in lists.
-            bool operator <(const CollisionInfo& other) const {
+            bool operator<(const CollisionInfo& other) const {
                 size_t otherHash = (size_t) other.A + ((size_t) other.B << 8);
                 size_t thisHash = (size_t) A + ((size_t) B << 8);
 

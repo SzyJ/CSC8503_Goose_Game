@@ -87,9 +87,17 @@ namespace NCL {
 				return (a.x*b.x) + (a.y*b.y) + (a.z*b.z);
 			}
 
+            constexpr float Dot(const Vector3& other) {
+                return (x * other.x) + (y * other.y) + (z * other.z);
+            }
+
 			static Vector3	Cross(const Vector3 &a, const Vector3 &b) {
 				return Vector3((a.y*b.z) - (a.z*b.y), (a.z*b.x) - (a.x*b.z), (a.x*b.y) - (a.y*b.x));
 			}
+
+            Vector3 Cross(const Vector3& other) {
+                return Vector3((y * other.z) - (z * other.y), (z * other.x) - (x * other.z), (x * other.y) - (y * other.x));
+            }
 
 			inline Vector3  operator+(const Vector3  &a) const {
 				return Vector3(x + a.x, y + a.y, z + a.z);
