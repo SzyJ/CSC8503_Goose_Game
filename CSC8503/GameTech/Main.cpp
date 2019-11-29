@@ -70,7 +70,7 @@ int main() {
 
         DisplayPathfinding();
 
-        w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
+        w->SetTitle("CSC8503 Game technology | FPS: " + std::to_string(1.0f / dt));
 
         g->UpdateGame(dt);
     }

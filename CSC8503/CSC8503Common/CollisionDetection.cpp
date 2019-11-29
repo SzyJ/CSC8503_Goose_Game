@@ -32,9 +32,9 @@ bool CollisionDetection::RayIntersection(const Ray& r, GameObject& object, RayCo
     case VolumeType::AABB:
         return RayAABBIntersection(r, transform, (const AABBVolume&) *volume, collision);
     case VolumeType::OBB:
-        return RayOBBIntersection(r, transform, (const OBBVolume&)*volume, collision);
+        return RayOBBIntersection(r, transform, (const OBBVolume&) *volume, collision);
     case VolumeType::Sphere:
-        return RaySphereIntersection(r, transform, (const SphereVolume&)*volume, collision);
+        return RaySphereIntersection(r, transform, (const SphereVolume&) *volume, collision);
     default:
         break;
     }
@@ -52,9 +52,9 @@ bool CollisionDetection::RayBoxIntersection(const Ray& r, const Vector3& boxPos,
     Vector3 intVals(-1.0f, -1.0f, -1.0f);
 
     for (int vecPos = 0; vecPos < 3; ++vecPos) {
-        if (rayDirection[vecPos] > 0) {
+        if (rayDirection[vecPos] > 0.0f) {
             intVals[vecPos] = (boxMin[vecPos] - rayPosition[vecPos]) / rayDirection[vecPos];
-        } else if (rayDirection[vecPos] < 0) {
+        } else if (rayDirection[vecPos] < 0.0f) {
             intVals[vecPos] = (boxMax[vecPos] - rayPosition[vecPos]) / rayDirection[vecPos];
         }
     }
@@ -65,13 +65,13 @@ bool CollisionDetection::RayBoxIntersection(const Ray& r, const Vector3& boxPos,
         return false;
     }
 
-    const float epsilon = 0.0001f;
-
     Vector3 intersection = rayPosition + (rayDirection * distanceToPoint);
+
+    const float epsilon = 0.0001f;
 
     for (int vecPos = 0; vecPos < 3; ++vecPos) {
         if (intersection[vecPos] + epsilon < boxMin[vecPos] ||
-            intersection[vecPos] + epsilon > boxMax[vecPos]) {
+            intersection[vecPos] - epsilon > boxMax[vecPos]) {
             return false;
         }
     }
@@ -122,8 +122,7 @@ bool CollisionDetection::RaySphereIntersection(const Ray& r, const Transform& wo
         return false;
     }
 
-    float sphereNormal = cos(DegreesToRadians((sphereDistance / sphereRadius) * 90.0f));
-    collision.RayDistance = sphereRadius - (sphereRadius * sphereNormal);
+    collision.RayDistance = (closestPoint - rayPosition).Length();
     collision.CollidedAt = rayPosition + (rayDirection * collision.RayDistance);
 
     return true;
