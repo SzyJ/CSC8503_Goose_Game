@@ -54,7 +54,7 @@ int main() {
 
     TutorialGame* g = new TutorialGame();
 
-    while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
+    while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::END)) {
         float dt = w->GetTimer()->GetTimeDeltaSeconds();
 
         if (dt > 1.0f) {

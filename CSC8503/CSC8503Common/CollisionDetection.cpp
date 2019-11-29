@@ -83,7 +83,7 @@ bool CollisionDetection::RayBoxIntersection(const Ray& r, const Vector3& boxPos,
 }
 
 bool CollisionDetection::RayAABBIntersection(const Ray& r, const Transform& worldTransform, const AABBVolume& volume, RayCollision& collision) {
-    return false;
+    return RayBoxIntersection(r, worldTransform.GetWorldPosition(), volume.GetHalfDimensions(), collision);
 }
 
 bool CollisionDetection::RayOBBIntersection(const Ray& r, const Transform& worldTransform, const OBBVolume& volume, RayCollision& collision) {

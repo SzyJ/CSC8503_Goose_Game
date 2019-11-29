@@ -226,7 +226,7 @@ letting you move the camera around.
 
 */
 bool TutorialGame::SelectObject() {
-    if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q)) {
+    if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
         m_InSelectionMode = !m_InSelectionMode;
         if (m_InSelectionMode) {
             Window::GetWindow()->ShowOSPointer(true);
@@ -237,7 +237,7 @@ bool TutorialGame::SelectObject() {
         }
     }
     if (m_InSelectionMode) {
-        m_Renderer->DrawString("Press Q to change to camera mode!", Vector2(10, 0));
+        m_Renderer->DrawString("Press Esc to change to camera mode!", Vector2(10, 0));
 
         if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT)) {
             if (m_SelectionObject) {
@@ -267,7 +267,7 @@ bool TutorialGame::SelectObject() {
             }
         }
     } else {
-        m_Renderer->DrawString("Press Q to change to select mode!", Vector2(10, 0));
+        m_Renderer->DrawString("Press Esc to change to select mode!", Vector2(10, 0));
     }
     return false;
 }
