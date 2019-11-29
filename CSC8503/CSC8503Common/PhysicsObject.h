@@ -88,5 +88,6 @@ namespace NCL {
             Vector3 m_InverseInertia;
             Matrix3 m_InverseInteriaTensor;
         };
+
     }
 }

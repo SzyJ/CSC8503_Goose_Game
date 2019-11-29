@@ -191,7 +191,30 @@ position and orientation. It may be called multiple times
 throughout a physics update, to slowly move the objects through
 the world, looking for collisions.
 */
-void PhysicsSystem::IntegrateVelocity(float dt) {}
+void PhysicsSystem::IntegrateVelocity(float dt) {
+    std::vector<GameObject*>::const_iterator first;
+    std::vector<GameObject*>::const_iterator last;
+    m_GameWorld.GetObjectIterators(first, last);
+
+    for (auto obj = first; obj < last; ++obj) {
+        PhysicsObject* physObject = (*obj)->GetPhysicsObject();
+
+        if (!physObject) {
+            continue;
+        }
+
+        float invMass = physObject->GetInverseMass();
+
+        Vector3 linearVel = physObject->GetLinearVelocity();
+        Vector3 force = physObject->GetForce();
+        Vector3 accel = force * invMass;
+
+        if (m_ApplyGravity && invMass) {
+            
+        }
+
+    }
+}
 
 /*
 Once we're finished with a physics update, we have to
