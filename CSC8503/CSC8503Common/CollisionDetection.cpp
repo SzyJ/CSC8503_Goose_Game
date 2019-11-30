@@ -169,6 +169,8 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
     }
 
     if (pairType & static_cast<unsigned int>(VolumeType::Sphere)) {
+        collisionInfo.A = b;
+        collisionInfo.B = a;
         return SphereIntersection((SphereVolume&)(*aVolume), aTransform, (SphereVolume&)(*bVolume), bTransform, collisionInfo);
     }
 

@@ -165,6 +165,7 @@ void PhysicsSystem::BasicCollisionDetection() {
             CollisionDetection::CollisionInfo info;
             if (CollisionDetection::ObjectIntersection(*aObj, *bObj, info)) {
                 std::cout << " Collision between " << (*aObj)->GetName() << " and " << (*bObj)->GetName() << std::endl;
+                ImpulseResolveCollision(*info.A, *info.B, info.Point);
                 info.FramesLeft = m_NumCollisionFrames;
                 m_AllCollisions.insert(info);
             }
@@ -178,7 +179,60 @@ In tutorial 5, we start determining the correct response to a collision,
 so that objects separate back out. 
 
 */
-void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const {}
+void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const {
+    PhysicsObject* aPhysObj = a.GetPhysicsObject();
+    PhysicsObject * bPhysObj = b.GetPhysicsObject();
+
+    Transform & aTransform = a.GetTransform();
+    Transform & bTransform = b.GetTransform();
+
+    const float aInvMass = aPhysObj->GetInverseMass();
+    const float bInvMass = bPhysObj->GetInverseMass();
+    
+    const Vector3 aPosition = aTransform.GetWorldPosition();
+    const Vector3 bPosition = bTransform.GetWorldPosition();
+    
+    const float massSum = aInvMass + bInvMass;
+    
+    const Vector3 aResolve = p.Normal * p.Penetration * (aInvMass / massSum);
+    const Vector3 bResolve = p.Normal * p.Penetration * (bInvMass / massSum);
+    
+    aTransform.SetWorldPosition(aPosition - aResolve);
+    bTransform.SetWorldPosition(bPosition + bResolve);
+    
+    const Vector3 aRelPos = p.LocalA - aTransform.GetWorldPosition();
+    const Vector3 bRelPos = p.LocalB - bTransform.GetWorldPosition();
+    
+    const Vector3 aAngVel = aPhysObj->GetAngularVelocity().Cross(aRelPos);
+    const Vector3 bAngVel = bPhysObj->GetAngularVelocity().Cross(bRelPos);
+    
+    const Vector3 aFullVel = aPhysObj->GetLinearVelocity() + aAngVel;
+    const Vector3 bFullVel = bPhysObj->GetLinearVelocity() + bAngVel;
+    
+    const Vector3 constantVel = bFullVel - aFullVel;
+    
+    const float impulseForce = Vector3::Dot(constantVel, p.Normal);
+    
+    const Vector3 aInertia = Vector3::Cross(
+        aPhysObj->GetInertiaTensor() * aRelPos.Cross(p.Normal),
+        aRelPos);
+    const Vector3 bInertia = Vector3::Cross(
+        bPhysObj->GetInertiaTensor() * bRelPos.Cross(p.Normal),
+        bRelPos);
+    
+    const float angularEffect = Vector3::Dot(aInertia + bInertia, p.Normal);
+    const float cRestitution = 0.66f;
+
+    const float j = (-impulseForce * (1.0f + cRestitution)) / (massSum + angularEffect);
+    
+    const Vector3 fullImpulse = p.Normal * j;
+    
+    aPhysObj->ApplyLinearImpulse(-fullImpulse);
+    bPhysObj->ApplyLinearImpulse(fullImpulse);
+    
+    aPhysObj->ApplyAngularImpulse(aRelPos.Cross(-fullImpulse));
+    bPhysObj->ApplyAngularImpulse(bRelPos.Cross(fullImpulse));
+}
 
 /*
 
