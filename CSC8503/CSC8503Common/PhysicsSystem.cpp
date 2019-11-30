@@ -183,15 +183,7 @@ This function will update both linear and angular acceleration,
 based on any forces that have been accumulated in the objects during
 the course of the previous game frame.
 */
-void PhysicsSystem::IntegrateAccel(float dt) {}
-
-/*
-This function integrates linear and angular velocity into
-position and orientation. It may be called multiple times
-throughout a physics update, to slowly move the objects through
-the world, looking for collisions.
-*/
-void PhysicsSystem::IntegrateVelocity(float dt) {
+void PhysicsSystem::IntegrateAccel(float dt) {
     std::vector<GameObject*>::const_iterator first;
     std::vector<GameObject*>::const_iterator last;
     m_GameWorld.GetObjectIterators(first, last);
@@ -209,10 +201,68 @@ void PhysicsSystem::IntegrateVelocity(float dt) {
         Vector3 force = physObject->GetForce();
         Vector3 accel = force * invMass;
 
-        if (m_ApplyGravity && invMass) {
-            
+        if (m_ApplyGravity && invMass > 0) {
+            accel += m_Gravity;
         }
 
+        linearVel += accel * dt;
+
+        physObject->SetLinearVelocity(linearVel);
+
+        // Angular movement
+        Vector3 torque = physObject->GetTorque();
+        Vector3 angularVel = physObject->GetAngularVelocity();
+
+        physObject->UpdateInertiaTensor();
+
+        Vector3 angularAccel = physObject->GetInertiaTensor() * torque;
+        angularVel += angularAccel * dt;
+
+        physObject->SetAngularVelocity(angularVel);
+    }
+}
+
+/*
+This function integrates linear and angular velocity into
+position and orientation. It may be called multiple times
+throughout a physics update, to slowly move the objects through
+the world, looking for collisions.
+*/
+void PhysicsSystem::IntegrateVelocity(float dt) {
+    std::vector<GameObject*>::const_iterator first;
+    std::vector<GameObject*>::const_iterator last;
+    m_GameWorld.GetObjectIterators(first, last);
+
+    float dampeningFactor = 1.0f - 0.95f;
+    float frameDampening = powf(dampeningFactor, dt);
+
+    for (auto obj = first; obj < last; ++obj) {
+        PhysicsObject* physObject = (*obj)->GetPhysicsObject();
+        if (!physObject) {
+            continue;
+        }
+        Transform& transform = (*obj)->GetTransform();
+
+        Vector3 position = transform.GetLocalPosition();
+        Vector3 linearVel = physObject->GetLinearVelocity();
+
+        position += linearVel * dt;
+        transform.SetLocalPosition(position);
+
+        linearVel *= frameDampening;
+        physObject->SetLinearVelocity(linearVel);
+
+        // Orientation
+        Quaternion orientation = transform.GetLocalOrientation();
+        Vector3 angularVel = physObject->GetAngularVelocity();
+
+        orientation += Quaternion(angularVel * dt * 0.5f, 0.0f) * orientation;
+        orientation.Normalise();
+
+        transform.SetLocalOrientation(orientation);
+        angularVel *= frameDampening;
+
+        physObject->SetAngularVelocity(angularVel);
     }
 }
 
