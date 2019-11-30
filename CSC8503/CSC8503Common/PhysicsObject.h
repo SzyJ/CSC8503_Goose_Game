@@ -6,7 +6,7 @@
 using namespace NCL::Maths;
 
 namespace NCL {
-    class CollisionVolume;
+    struct CollisionVolume;
 
     namespace CSC8503 {
         class Transform;

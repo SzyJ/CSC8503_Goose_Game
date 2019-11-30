@@ -431,7 +431,7 @@ GameObject* TutorialGame::AddParkKeeperToWorld(const Vector3& position) {
 
     GameObject* keeper = new GameObject("Keeper");
 
-    AABBVolume* volume = new AABBVolume(Vector3(0.3, 0.9f, 0.3) * meshSize);
+    AABBVolume* volume = new AABBVolume(Vector3(0.3f, 0.9f, 0.3f) * meshSize);
     keeper->SetBoundingVolume((CollisionVolume*) volume);
 
     keeper->GetTransform().SetWorldScale(Vector3(meshSize, meshSize, meshSize));
@@ -467,7 +467,7 @@ GameObject* TutorialGame::AddCharacterToWorld(const Vector3& position) {
     float r = rand() / (float) RAND_MAX;
 
 
-    AABBVolume* volume = new AABBVolume(Vector3(0.3, 0.9f, 0.3) * meshSize);
+    AABBVolume* volume = new AABBVolume(Vector3(0.3f, 0.9f, 0.3f) * meshSize);
     character->SetBoundingVolume((CollisionVolume*) volume);
 
     character->GetTransform().SetWorldScale(Vector3(meshSize, meshSize, meshSize));
