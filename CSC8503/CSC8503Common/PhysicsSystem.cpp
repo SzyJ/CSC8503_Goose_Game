@@ -164,7 +164,7 @@ void PhysicsSystem::BasicCollisionDetection() {
 
             CollisionDetection::CollisionInfo info;
             if (CollisionDetection::ObjectIntersection(*aObj, *bObj, info)) {
-                std::cout << " Collision between " << (*aObj)->GetName() << " and " << (*bObj)->GetName() << std::endl;
+                //std::cout << " Collision between " << (*aObj)->GetName() << " and " << (*bObj)->GetName() << std::endl;
                 ImpulseResolveCollision(*info.A, *info.B, info.Point);
                 info.FramesLeft = m_NumCollisionFrames;
                 m_AllCollisions.insert(info);
@@ -243,14 +243,52 @@ compare the collisions that we absolutely need to.
 
 */
 
-void PhysicsSystem::BroadPhase() {}
+void PhysicsSystem::BroadPhase() {
+    m_BroadphaseCollisions.clear();
+
+    QuadTree<GameObject*> tree(Vector2(1024, 1024), 7, 6);
+
+    std::vector<GameObject*>::const_iterator first;
+    std::vector<GameObject*>::const_iterator last;
+    m_GameWorld.GetObjectIterators(first, last);
+
+    for (auto obj = first; obj != last; ++obj) {
+        Vector3 halfSize;
+        if (!(*obj)->GetBroadphaseAABB(halfSize)) {
+            continue;
+        }
+
+        Vector3 pos = (*obj)->GetConstTransform().GetWorldPosition();
+        tree.Insert(*obj, pos, halfSize);
+    }
+
+    tree.OperateOnContents([&](std::list<QuadTreeEntry<GameObject*>>& data) {
+    CollisionDetection::CollisionInfo info;
+        for (auto i = data.begin(); i != data.end(); ++i) {
+            for (auto j = std::next(i); j != data.end(); ++j) {
+                info.A = min(i->Object, j->Object);
+                info.B = max(i->Object, j->Object);
+                m_BroadphaseCollisions.insert(info);
+            }
+        }
+    });
+}
 
 /*
 
 The broadphase will now only give us likely collisions, so we can now go through them,
 and work out if they are truly colliding, and if so, add them into the main collision list
 */
-void PhysicsSystem::NarrowPhase() {}
+void PhysicsSystem::NarrowPhase() {
+    for (const auto& info : m_BroadphaseCollisions) {
+        auto infoCopy = info;
+        if (CollisionDetection::ObjectIntersection(infoCopy.A, infoCopy.B, infoCopy)) {
+            infoCopy.FramesLeft = m_NumCollisionFrames;
+            ImpulseResolveCollision(*infoCopy.A, *infoCopy.B, infoCopy.Point);
+            m_AllCollisions.insert(infoCopy);
+        }
+    }
+}
 
 /*
 Integration of acceleration and velocity is split up, so that we can

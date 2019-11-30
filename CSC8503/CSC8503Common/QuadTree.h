@@ -39,13 +39,55 @@ namespace NCL {
                 delete[] m_Children;
             }
 
-            void Insert(T& object, const Vector3& objectPos, const Vector3& objectSize, int depthLeft, int maxSize) { }
+            void Insert(T & object, const Vector3 & objectPos, const Vector3 & objectSize, int depthLeft, int maxSize) {
+                if (!CollisionDetection::AABBTest(objectPos, Vector3(m_Position.x, 0.0f, m_Position.y), objectSize, Vector3(m_Size.x, 1000.0f, m_Size.y))) {
+                    return;
+                }
+                if (m_Children) {
+                    for (int i = 0; i < 4; ++i) {
+                        m_Children[i].Insert(object, objectPos, objectSize, depthLeft, maxSize);
+                    }
+                    return;
+                }
+                
+                m_Contents.emplace_back(QuadTreeEntry<T>(object, objectPos, objectSize));
 
-            void Split() { }
+                if (static_cast<int>(m_Contents.size()) > maxSize&& depthLeft > 0 && !m_Children) {
+                    Split();
 
-            void DebugDraw() { }
+                    for (const auto& entry : m_Contents) {
+                        for (int j = 0; j < 4; ++j) {
+                            auto entryCopy = entry;
+                            m_Children->Insert(entryCopy.Object, entryCopy.Pos, entryCopy.Size, depthLeft - 1, maxSize);
+                        }
+                    }
 
-            void OperateOnContents(QuadTreeFunc& func) { }
+                    m_Contents.clear();
+                }
+            }
+
+            void Split() {
+                Vector2 halfSize = m_Size / 2.0f;
+                m_Children = new QuadTreeNode<T>[4];
+                m_Children[0] = QuadTreeNode<T>(m_Position + Vector2(-halfSize.x, halfSize.y), halfSize);
+                m_Children[1] = QuadTreeNode<T>(m_Position + Vector2(halfSize.x, halfSize.y), halfSize);
+                m_Children[2] = QuadTreeNode<T>(m_Position + Vector2(-halfSize.x, -halfSize.y), halfSize);
+                m_Children[3] = QuadTreeNode<T>(m_Position + Vector2(halfSize.x, -halfSize.y), halfSize);
+            }
+
+            void DebugDraw();
+
+            void OperateOnContents(QuadTreeFunc & func) {
+                if (m_Children) {
+                    for (int i = 0; i < 4; ++i) {
+                        m_Children[i].OperateOnContents(func);
+                    }
+                } else {
+                    if (!m_Contents.empty()) {
+                        func(m_Contents);
+                    }
+                }
+            }
 
         protected:
             std::list<QuadTreeEntry<T>> m_Contents;
