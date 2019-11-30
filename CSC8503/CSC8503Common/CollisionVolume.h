@@ -11,13 +11,16 @@ namespace NCL {
         Invalid = 256
     };
 
-    class CollisionVolume {
-    public:
+    struct CollisionVolume {
+        VolumeType Type;
+
         CollisionVolume()
-            : m_Type(VolumeType::Invalid) { }
+            : Type(VolumeType::Invalid) { }
+        CollisionVolume(VolumeType type)
+            : Type(type) { }
         ~CollisionVolume() = default;
 
-        VolumeType m_Type;
+        unsigned int TypeAsInt() const { return static_cast<unsigned int>(Type); }
     };
 
 }

@@ -9,7 +9,7 @@ namespace NCL {
     public:
         AABBVolume(const Vector3& halfDims)
             : m_HalfSizes(halfDims) {
-            m_Type = VolumeType::AABB;
+            Type = VolumeType::AABB;
         }
         ~AABBVolume() = default;
 

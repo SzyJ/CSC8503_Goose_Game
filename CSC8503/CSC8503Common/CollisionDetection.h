@@ -76,8 +76,8 @@ namespace NCL {
         static bool AABBIntersection(const AABBVolume& volumeA, const Transform& worldTransformA,
             const AABBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo);
 
-        static bool SphereIntersection(const SphereVolume& volumeA, const Transform& worldTransformA,
-            const SphereVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo);
+        static bool SphereIntersection(const SphereVolume& aVolume, const Transform& worldTransformA,
+            const SphereVolume& bVolume, const Transform& worldTransformB, CollisionInfo& collisionInfo);
 
         static bool AABBSphereIntersection(const AABBVolume& volumeA, const Transform& worldTransformA,
             const SphereVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo);
@@ -95,6 +95,8 @@ namespace NCL {
     protected:
 
     private:
+        static const Vector3 s_BoxFaces[6];
+
         CollisionDetection() = default;
         ~CollisionDetection() = default;
     };

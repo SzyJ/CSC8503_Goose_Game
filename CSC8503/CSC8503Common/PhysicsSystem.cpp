@@ -111,11 +111,12 @@ OnCollisionBegin / OnCollisionEnd functions (removing health when hit by a
 rocket launcher, gaining a point when the player hits the gold coin, and so on).
 */
 void PhysicsSystem::UpdateCollisionList() {
-    for (std::set<CollisionDetection::CollisionInfo>::iterator i = m_AllCollisions.begin(); i != m_AllCollisions.end();) {
+    for (auto i = m_AllCollisions.begin(); i != m_AllCollisions.end();) {
         if ((*i).FramesLeft == m_NumCollisionFrames) {
             i->A->OnCollisionBegin(i->B);
             i->B->OnCollisionBegin(i->A);
         }
+
         (*i).FramesLeft = (*i).FramesLeft - 1;
         if ((*i).FramesLeft < 0) {
             i->A->OnCollisionEnd(i->B);
@@ -146,7 +147,30 @@ to the collision set for later processing. The set will guarantee that
 a particular pair will only be added once, so objects colliding for
 multiple frames won't flood the set with duplicates.
 */
-void PhysicsSystem::BasicCollisionDetection() {}
+void PhysicsSystem::BasicCollisionDetection() {
+    std::vector < GameObject* >::const_iterator first;
+    std::vector < GameObject* >::const_iterator last;
+    m_GameWorld.GetObjectIterators(first, last);
+
+    for (auto aObj = first; aObj != last; ++aObj) {
+        if ((*aObj)->GetPhysicsObject() == nullptr) {
+            continue;
+        }
+
+        for (auto bObj = aObj + 1; bObj != last; ++bObj) {
+            if ((*bObj)->GetPhysicsObject() == nullptr) {
+                continue;
+            }
+
+            CollisionDetection::CollisionInfo info;
+            if (CollisionDetection::ObjectIntersection(*aObj, *bObj, info)) {
+                std::cout << " Collision between " << (*aObj)->GetName() << " and " << (*bObj)->GetName() << std::endl;
+                info.FramesLeft = m_NumCollisionFrames;
+                m_AllCollisions.insert(info);
+            }
+        }
+    }
+}
 
 /*
 
