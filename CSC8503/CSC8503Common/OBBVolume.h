@@ -5,18 +5,18 @@
 namespace NCL {
     class OBBVolume : CollisionVolume {
     public:
-        OBBVolume(const Maths::Vector3& halfDims) {
+        OBBVolume(const Maths::Vector3& halfDims)
+            : m_HalfSizes(halfDims) {
             Type = VolumeType::OBB;
-            halfSizes = halfDims;
         }
 
-        ~OBBVolume() {}
+        ~OBBVolume() = default;
 
         Maths::Vector3 GetHalfDimensions() const {
-            return halfSizes;
+            return m_HalfSizes;
         }
 
     protected:
-        Maths::Vector3 halfSizes;
+        Maths::Vector3 m_HalfSizes;
     };
 }

@@ -288,10 +288,35 @@ bool CollisionDetection::AABBSphereIntersection(
     return true;
 }
 
+
+bool CollisionDetection::AABBOBBIntresection(
+    const AABBVolume& volumeA, const Transform& worldTransformA,
+    const OBBVolume& volumeB, const Transform& worldTransformB,
+    CollisionInfo& collisionInfo) {
+
+    // Implement SAT
+
+    return false;
+}
+
+bool CollisionDetection::OBBSphereIntersection(
+    const OBBVolume& volumeA, const Transform& worldTransformA,
+    const SphereVolume& volumeB, const Transform& worldTransformB,
+    CollisionInfo& collisionInfo) {
+
+    // Rotate and resolve as AABB and Sphere.
+
+    return false;
+}
+
+
 bool CollisionDetection::OBBIntersection(
     const OBBVolume& volumeA, const Transform& worldTransformA,
     const OBBVolume& volumeB, const Transform& worldTransformB,
     CollisionInfo& collisionInfo) {
+
+    // Rotate and resolve as AABB and OBB.
+
     return false;
 }
 

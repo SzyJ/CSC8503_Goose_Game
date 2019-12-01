@@ -252,7 +252,6 @@ bool TutorialGame::SelectObject() {
             if (m_World->Raycast(ray, closestCollision, true)) {
                 m_SelectionObject = (GameObject*) closestCollision.Node;
                 m_SelectionObject->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
-                std::cout << closestCollision.CollidedAt << std::endl;
                 return true;
             } else {
                 return false;
