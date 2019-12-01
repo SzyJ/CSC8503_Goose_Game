@@ -199,10 +199,6 @@ void TutorialGame::DebugObjectMovement() {
             m_SelectionObject->GetPhysicsObject()->AddTorque(Vector3(0, -10, 0));
         }
 
-        if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT)) {
-            m_SelectionObject->GetPhysicsObject()->AddTorque(Vector3(10, 0, 0));
-        }
-
         if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
             m_SelectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -10));
         }
@@ -382,7 +378,7 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
     GameObject* cube = new GameObject("Cube");
 
-    AABBVolume* volume = new AABBVolume(dimensions);
+    auto* volume = new AABBVolume(dimensions);
 
     cube->SetBoundingVolume((CollisionVolume*) volume);
 

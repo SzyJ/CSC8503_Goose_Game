@@ -19,8 +19,6 @@ namespace NCL {
         public:
            GameObject(string objectName = "")
                 : m_Name(objectName), m_IsActive(true) {
-                m_Name = objectName;
-                m_IsActive = true;
             }
 
             virtual ~GameObject() {

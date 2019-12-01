@@ -169,8 +169,6 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
     }
 
     if (pairType & static_cast<unsigned int>(VolumeType::Sphere)) {
-        collisionInfo.A = b;
-        collisionInfo.B = a;
         return SphereIntersection((SphereVolume&)(*aVolume), aTransform, (SphereVolume&)(*bVolume), bTransform, collisionInfo);
     }
 
@@ -250,10 +248,10 @@ bool CollisionDetection::SphereIntersection(
 
     const float penetration = radiusSum - distance;
     const Vector3 normal = distanceDelta.Normalised();
-    const Vector3 localA =  normal * aVolume.GetRadius();
-    const Vector3 localB = -normal * bVolume.GetRadius();
+    const Vector3 localA = -normal * aVolume.GetRadius();
+    const Vector3 localB =  normal * bVolume.GetRadius();
 
-    collisionInfo.AddContactPoint(localA, localB, normal, penetration);
+    collisionInfo.AddContactPoint(localA, localB, -normal, penetration);
 
     return true;
 }
