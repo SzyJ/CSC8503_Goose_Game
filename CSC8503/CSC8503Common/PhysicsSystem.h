@@ -9,7 +9,7 @@ namespace NCL {
         class PhysicsSystem {
         public:
             PhysicsSystem(GameWorld& g)
-                : m_GameWorld(g), m_ApplyGravity(false),m_DTOffset(0.0f),  m_UseBroadPhase(false), m_GlobalDamping(0.95f) {
+                : m_GameWorld(g), m_ApplyGravity(false), m_DTOffset(0.0f), m_GlobalDamping(0.95f) {
                 SetGravity(Vector3(0.0f, -9.81f, 0.0f));
             }
             ~PhysicsSystem() = default;
@@ -59,7 +59,7 @@ namespace NCL {
             std::set<CollisionDetection::CollisionInfo> m_BroadphaseCollisions;
             std::vector<CollisionDetection::CollisionInfo> m_BroadphaseCollisionsVec;
 
-            bool m_UseBroadPhase = true;
+            bool m_UseBroadPhase = false;
 
             int m_NumCollisionFrames = 5;
         };

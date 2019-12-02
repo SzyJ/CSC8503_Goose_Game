@@ -40,6 +40,14 @@ namespace NCL {
                 return m_IsActive;
             }
 
+            void MakeActive() {
+                m_IsActive = true;
+            }
+
+            void Sleep() {
+                m_IsActive = false;
+            }
+
             const Transform& GetConstTransform() const {
                 return m_Transform;
             }

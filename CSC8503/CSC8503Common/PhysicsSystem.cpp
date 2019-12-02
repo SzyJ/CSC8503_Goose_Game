@@ -37,8 +37,7 @@ This is the core of the physics engine update
 
 */
 void PhysicsSystem::Update(float dt) {
-    GameTimer testTimer;
-    testTimer.GetTimeDeltaSeconds();
+    //GameTimer testTimer;
 
     m_FrameDT = dt;
 
@@ -95,7 +94,7 @@ void PhysicsSystem::Update(float dt) {
 
     UpdateCollisionList(); //Remove any old collisions
     //std::cout << iteratorCount << " , " << iterationDt << std::endl;
-    float time = testTimer.GetTimeDeltaSeconds();
+    //float time = testTimer.GetTimeDeltaSeconds();
     //std::cout << "Physics time taken: " << time << std::endl;
 }
 
@@ -148,8 +147,8 @@ a particular pair will only be added once, so objects colliding for
 multiple frames won't flood the set with duplicates.
 */
 void PhysicsSystem::BasicCollisionDetection() {
-    std::vector < GameObject* >::const_iterator first;
-    std::vector < GameObject* >::const_iterator last;
+    std::vector<GameObject*>::const_iterator first;
+    std::vector<GameObject*>::const_iterator last;
     m_GameWorld.GetObjectIterators(first, last);
 
     for (auto aObj = first; aObj != last; ++aObj) {
@@ -162,6 +161,10 @@ void PhysicsSystem::BasicCollisionDetection() {
                 continue;
             }
 
+            if (!(*aObj)->IsActive() && !(*bObj)->IsActive()) {
+                continue;
+            }
+
             CollisionDetection::CollisionInfo info;
             if (CollisionDetection::ObjectIntersection(*aObj, *bObj, info)) {
                 //std::cout << " Collision between " << (*aObj)->GetName() << " and " << (*bObj)->GetName() << std::endl;
@@ -169,6 +172,7 @@ void PhysicsSystem::BasicCollisionDetection() {
                 info.FramesLeft = m_NumCollisionFrames;
                 m_AllCollisions.insert(info);
             }
+
         }
     }
 }

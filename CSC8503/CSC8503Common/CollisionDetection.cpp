@@ -293,6 +293,10 @@ bool CollisionDetection::AABBOBBIntresection(
     CollisionInfo& collisionInfo) {
 
     // Implement SAT
+    Quaternion bOrientation = worldTransformB.GetLocalOrientation();
+    Vector3 bPosition = worldTransformB.GetWorldPosition();
+    Vector3 bSize = volumeB.GetHalfDimensions();
+
 
     return false;
 }
