@@ -278,7 +278,7 @@ bool CollisionDetection::AABBSphereIntersection(
     const Vector3 collisionNormal = localPoint.Normalised();
     const float penetration = sphereRadius - distance;
 
-    const Vector3 localA = Vector3();
+    const Vector3 localA = closestPointOnBox;
     const Vector3 localB = -collisionNormal * sphereRadius;
 
     collisionInfo.AddContactPoint(localA, localB, collisionNormal, penetration);

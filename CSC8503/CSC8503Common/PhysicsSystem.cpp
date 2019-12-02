@@ -200,8 +200,8 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
     aTransform.SetWorldPosition(aPosition - aResolve);
     bTransform.SetWorldPosition(bPosition + bResolve);
     
-    const Vector3 aRelPos = p.LocalA - aTransform.GetWorldPosition();
-    const Vector3 bRelPos = p.LocalB - bTransform.GetWorldPosition();
+    const Vector3 aRelPos = p.LocalA;
+    const Vector3 bRelPos = p.LocalB;
     
     const Vector3 aAngVel = aPhysObj->GetAngularVelocity().Cross(aRelPos);
     const Vector3 bAngVel = bPhysObj->GetAngularVelocity().Cross(bRelPos);
@@ -318,7 +318,21 @@ void PhysicsSystem::IntegrateAccel(float dt) {
         Vector3 accel = force * invMass;
 
         if (m_ApplyGravity && invMass > 0) {
-            accel += m_Gravity;
+            Vector3 gravAccel = m_Gravity * invMass;
+            
+            if (gravAccel.x > 100.0f) {
+                gravAccel.x = 100.f;
+            }
+
+            if (gravAccel.y > 100.0f) {
+                gravAccel.y = 100.f;
+            }
+
+            if (gravAccel.z > 100.0f) {
+                gravAccel.z = 100.f;
+            }
+
+            accel += gravAccel;
         }
 
         linearVel += accel * dt;
