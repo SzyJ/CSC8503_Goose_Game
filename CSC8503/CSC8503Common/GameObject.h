@@ -8,6 +8,7 @@
 #include "NetworkObject.h"
 
 #include <vector>
+#include <deque>
 
 using std::vector;
 
@@ -68,6 +69,24 @@ namespace NCL {
                 return m_NetworkObject;
             }
 
+            void AddPositionDelta(const Vector3& positionDelta) {
+                m_PositionDeltaQueue.push_front(positionDelta);
+                Vector3 posDeltaAvg = Vector3(0.0f, 0.0f, 0.0f);
+
+                for (Vector3 posDelta : m_PositionDeltaQueue) {
+                    posDeltaAvg += posDelta;
+                }
+
+                const size_t queueSize = m_PositionDeltaQueue.size();
+                posDeltaAvg /= queueSize;
+
+                m_IsSleeping = posDeltaAvg.GetAbsMaxElement() > 0.05f;
+
+                if (queueSize >= 5) {
+                    m_PositionDeltaQueue.pop_back();
+                }
+            }
+
             void SetRenderObject(RenderObject* newObject) {
                 m_RenderObject = newObject;
             }
@@ -101,6 +120,9 @@ namespace NCL {
             bool m_IsActive;
             string m_Name;
             Vector3 m_BroadphaseAABB;
+
+            std::deque<Vector3> m_PositionDeltaQueue;
+            bool m_IsSleeping;
         };
 
     }

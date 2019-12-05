@@ -332,7 +332,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
     GameObject* floor = new GameObject("Ground");
 
     Vector3 floorSize = Vector3(100, 2, 100);
-    AABBVolume* volume = new AABBVolume(floorSize);
+    auto* volume = new AABBVolume(floorSize);
     floor->SetBoundingVolume((CollisionVolume*) volume);
     floor->GetTransform().SetWorldScale(floorSize);
     floor->GetTransform().SetWorldPosition(position);

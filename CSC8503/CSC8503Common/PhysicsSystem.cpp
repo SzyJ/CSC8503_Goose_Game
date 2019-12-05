@@ -322,7 +322,7 @@ void PhysicsSystem::IntegrateAccel(float dt) {
         Vector3 accel = force * invMass;
 
         if (m_ApplyGravity && invMass > 0) {
-            Vector3 gravAccel = m_Gravity * invMass;
+            Vector3 gravAccel = m_Gravity;
             
             if (gravAccel.x > 100.0f) {
                 gravAccel.x = 100.f;
