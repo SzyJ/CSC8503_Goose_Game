@@ -84,7 +84,7 @@ void TutorialGame::UpdateGame(float dt) {
     SelectObject();
     MoveSelectedObject();
 
-    //UpdateAppleForces();
+    UpdateAppleForces();
 
     m_World->UpdateWorld(dt);
     m_Renderer->Update(dt);
@@ -96,26 +96,32 @@ void TutorialGame::UpdateGame(float dt) {
 
 void TutorialGame::UpdateAppleForces() {
     for (uint16_t index = 0; index < m_AppleChain.size(); ++index) {
-        Vector3 followDirection;
+        Vector3 targetPosition;
 
         GameObject* thisApple = m_AppleChain.at(index);
         if (index == 0) {
-            followDirection = m_Goose->GetTransform().GetWorldPosition() - thisApple->GetTransform().GetWorldPosition();
-        } else {
-            followDirection = m_AppleChain.at(index - 1)->GetTransform().GetWorldPosition() - thisApple->GetTransform().GetWorldPosition();
-        }
-        followDirection.Normalise();
+            Vector3 direction;
+            direction = m_Goose->GetTransform().GetWorldPosition() - thisApple->GetTransform().GetWorldPosition();
+            float objDistance = direction.Length();
+            objDistance -= (0.7f + 0.7f + 0.4f);
 
-        float distOffset = followDirection.GetAbsMaxElement() - 0.3f;
-        if (distOffset < 0.0f) {
-            distOffset = 0.0f;
+            targetPosition = direction.Normalised() * objDistance;
+
+        } else {
+            Vector3 direction;
+            direction = m_AppleChain.at(index - 1)->GetTransform().GetWorldPosition() - thisApple->GetTransform().GetWorldPosition();
+
+            float objDistance = direction.Length();
+            objDistance -= (0.7f + 0.7f + 0.4f);
+
+            targetPosition = direction.Normalised() * objDistance;
         }
+
+        //targetPosition.Normalise();
 
         float forceStrength = (15.0f * 5.0f) - (5.0f * 1.0f);
-        forceStrength *= distOffset;
 
-
-        thisApple->GetPhysicsObject()->AddForce(followDirection * forceStrength);
+        thisApple->GetPhysicsObject()->AddForce(targetPosition * forceStrength);
     }
 }
 
