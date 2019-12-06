@@ -142,6 +142,10 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
         return false;
     }
 
+    //if (a->IsSleeping() && b->IsSleeping()) {
+    //    return false;
+    //}
+
     collisionInfo.A = a;
     collisionInfo.B = b;
 
@@ -149,6 +153,22 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
     const Transform& bTransform = b->GetConstTransform();
 
     unsigned int pairType = aVolume->TypeAsInt() | bVolume->TypeAsInt();
+
+    if (pairType & static_cast<unsigned int>(VolumeType::OBB) &&
+        pairType& static_cast<unsigned int>(VolumeType::Sphere)) {
+        if (aVolume->Type == VolumeType::OBB &&
+            bVolume->Type == VolumeType::Sphere) {
+            return OBBSphereIntersection((OBBVolume&)*aVolume, aTransform, (SphereVolume&)*bVolume, bTransform, collisionInfo);
+        }
+        else if (
+            aVolume->Type == VolumeType::Sphere &&
+            bVolume->Type == VolumeType::OBB) {
+            collisionInfo.A = b;
+            collisionInfo.B = a;
+            return OBBSphereIntersection((OBBVolume&)*bVolume, bTransform, (SphereVolume&)*aVolume, aTransform, collisionInfo);
+        }
+    }
+
 
     if (pairType & static_cast<unsigned int>(VolumeType::AABB) &&
         pairType & static_cast<unsigned int>(VolumeType::Sphere)) {
@@ -306,7 +326,27 @@ bool CollisionDetection::OBBSphereIntersection(
     const SphereVolume& volumeB, const Transform& worldTransformB,
     CollisionInfo& collisionInfo) {
 
-    // Rotate and resolve as AABB and Sphere.
+    const Quaternion aOrientation = worldTransformA.GetLocalOrientation();
+
+    const Vector3 localPositionOffset = -worldTransformA.GetWorldPosition();
+    const Vector3 sphereLocalPosition = worldTransformB.GetWorldPosition() + localPositionOffset;
+    const Vector3 bLocalSpacePosition = aOrientation.Conjugate() * sphereLocalPosition;
+
+    Transform localSphereTransform;
+    localSphereTransform.SetWorldPosition(bLocalSpacePosition);
+
+    AABBVolume localCubeVolume(volumeA.GetHalfDimensions());
+    Transform localCubeTransform;
+    localCubeTransform.SetWorldPosition(Vector3(0.0f, 0.0f, 0.0f));
+
+    //CollisionInfo localInfo;
+    AABBSphereIntersection(localCubeVolume, localCubeTransform, volumeB, localSphereTransform, collisionInfo);
+
+    // Re-Add offsets to penetration and collision point
+    collisionInfo.Point.Normal = aOrientation * collisionInfo.Point.Normal;
+    collisionInfo.Point.LocalA = aOrientation * collisionInfo.Point.LocalA;
+    collisionInfo.Point.LocalA += localPositionOffset;
+    collisionInfo.Point.LocalB += localPositionOffset;
 
     return false;
 }

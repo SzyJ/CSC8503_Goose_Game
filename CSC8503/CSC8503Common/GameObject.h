@@ -41,12 +41,20 @@ namespace NCL {
                 return m_IsActive;
             }
 
+            bool IsSleeping() const {
+                return m_IsSleeping;
+            }
+
             void MakeActive() {
                 m_IsActive = true;
             }
 
-            void Sleep() {
-                m_IsActive = false;
+            void SetSleep(bool sleepState) {
+                m_IsSleeping = sleepState;
+
+               if (!sleepState) {
+                   m_PositionDeltaQueue.clear();
+               }
             }
 
             const Transform& GetConstTransform() const {
@@ -78,11 +86,19 @@ namespace NCL {
                 }
 
                 const size_t queueSize = m_PositionDeltaQueue.size();
-                posDeltaAvg /= queueSize;
+                
 
-                m_IsSleeping = posDeltaAvg.GetAbsMaxElement() > 0.05f;
+                if (m_IsSleeping) {
+                    m_RenderObject->SetColour(Vector3(1.0f, 0.0f, 0.0f));
+                } else {
+                    //m_RenderObject->SetColour(Vector3(1.0f, 1.0f, 0.0f));
+                    m_RenderObject->SetColour(Vector3(1.0f, 1.0f, 1.0f));
+                }
 
                 if (queueSize >= 5) {
+                    posDeltaAvg /= queueSize;
+                    //m_IsSleeping = posDeltaAvg.GetAbsMaxElement() < 0.5f;
+
                     m_PositionDeltaQueue.pop_back();
                 }
             }
@@ -122,7 +138,7 @@ namespace NCL {
             Vector3 m_BroadphaseAABB;
 
             std::deque<Vector3> m_PositionDeltaQueue;
-            bool m_IsSleeping;
+            bool m_IsSleeping = false;
         };
 
     }

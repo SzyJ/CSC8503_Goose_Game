@@ -15,6 +15,14 @@ using namespace CSC8503;
 
 void PhysicsSystem::SetGravity(const Vector3& g) {
     m_Gravity = g;
+
+    std::vector<GameObject*>::const_iterator first;
+    std::vector<GameObject*>::const_iterator last;
+    m_GameWorld.GetObjectIterators(first, last);
+
+    for (auto i = first; i != last; ++i) {
+        (*i)->SetSleep(false);
+    }
 }
 
 /*
@@ -62,7 +70,7 @@ void PhysicsSystem::Update(float dt) {
     }
 
     int constraintIterationCount = 10;
-    iterationDt = dt;
+    //iterationDt = dt;
 
     if (m_UseBroadPhase) {
         UpdateObjectAABBs();
@@ -162,6 +170,10 @@ void PhysicsSystem::BasicCollisionDetection() {
             }
 
             if (!(*aObj)->IsActive() && !(*bObj)->IsActive()) {
+                continue;
+            }
+
+            if ((*aObj)->IsSleeping() && (*bObj)->IsSleeping()) {
                 continue;
             }
 
@@ -309,6 +321,10 @@ void PhysicsSystem::IntegrateAccel(float dt) {
     m_GameWorld.GetObjectIterators(first, last);
 
     for (auto obj = first; obj < last; ++obj) {
+        //if ((*obj)->IsSleeping()) {
+        //    continue;
+        //}
+
         PhysicsObject* physObject = (*obj)->GetPhysicsObject();
 
         if (!physObject) {
@@ -371,6 +387,10 @@ void PhysicsSystem::IntegrateVelocity(float dt) {
     float frameDampening = powf(dampeningFactor, dt);
 
     for (auto obj = first; obj < last; ++obj) {
+        //if ((*obj)->IsSleeping()) {
+        //    continue;
+        //}
+
         PhysicsObject* physObject = (*obj)->GetPhysicsObject();
         if (!physObject) {
             continue;
@@ -379,8 +399,11 @@ void PhysicsSystem::IntegrateVelocity(float dt) {
 
         Vector3 position = transform.GetLocalPosition();
         Vector3 linearVel = physObject->GetLinearVelocity();
+        Vector3 positionDelta = linearVel * dt;
 
-        position += linearVel * dt;
+        position += positionDelta;
+        (*obj)->AddPositionDelta(positionDelta);
+
         transform.SetLocalPosition(position);
 
         linearVel *= frameDampening;

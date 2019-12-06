@@ -38,6 +38,8 @@ namespace NCL {
             void LockedObjectMovement();
             void LockedCameraMovement();
 
+            void UpdateAppleForces();
+
             GameObject* AddFloorToWorld(const Vector3& position);
             GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
             GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
@@ -46,6 +48,9 @@ namespace NCL {
             GameObject* AddParkKeeperToWorld(const Vector3& position);
             GameObject* AddCharacterToWorld(const Vector3& position);
             GameObject* AddAppleToWorld(const Vector3& position);
+
+            std::vector<GameObject*> m_AppleChain;
+            GameObject* m_Goose;
 
             GameTechRenderer* m_Renderer;
             PhysicsSystem* m_Physics;

@@ -84,12 +84,39 @@ void TutorialGame::UpdateGame(float dt) {
     SelectObject();
     MoveSelectedObject();
 
+    //UpdateAppleForces();
+
     m_World->UpdateWorld(dt);
     m_Renderer->Update(dt);
     m_Physics->Update(dt);
 
     Debug::FlushRenderables();
     m_Renderer->Render();
+}
+
+void TutorialGame::UpdateAppleForces() {
+    for (uint16_t index = 0; index < m_AppleChain.size(); ++index) {
+        Vector3 followDirection;
+
+        GameObject* thisApple = m_AppleChain.at(index);
+        if (index == 0) {
+            followDirection = m_Goose->GetTransform().GetWorldPosition() - thisApple->GetTransform().GetWorldPosition();
+        } else {
+            followDirection = m_AppleChain.at(index - 1)->GetTransform().GetWorldPosition() - thisApple->GetTransform().GetWorldPosition();
+        }
+        followDirection.Normalise();
+
+        float distOffset = followDirection.GetAbsMaxElement() - 0.3f;
+        if (distOffset < 0.0f) {
+            distOffset = 0.0f;
+        }
+
+        float forceStrength = (15.0f * 5.0f) - (5.0f * 1.0f);
+        forceStrength *= distOffset;
+
+
+        thisApple->GetPhysicsObject()->AddForce(followDirection * forceStrength);
+    }
 }
 
 void TutorialGame::UpdateKeys() {
@@ -276,12 +303,13 @@ line - after the third, they'll be able to twist under torque aswell.
 */
 
 void TutorialGame::MoveSelectedObject() {
+    if (!m_SelectionObject) {
+        return;
+    }
 
     m_ForceMagnitude += Window::GetMouse()->GetWheelMovement() * 100.0f;
 
-    if (!m_SelectionObject) {
-        return;
-    } else if (m_InSelectionMode) {
+    if (m_InSelectionMode) {
         m_Renderer->DrawString(" Click Force :" + std::to_string(m_ForceMagnitude), Vector2(10, 20)); // Draw debug text at 10 ,20
     }
 
@@ -312,8 +340,10 @@ void TutorialGame::InitWorld() {
     m_Physics->Clear();
 
     InitMixedGridWorld(10, 10, 3.5f, 3.5f);
-    AddGooseToWorld(Vector3(30, 2, 0));
-    AddAppleToWorld(Vector3(35, 2, 0));
+    m_Goose = AddGooseToWorld(Vector3(30, 2, 0));
+
+    m_AppleChain.push_back(AddAppleToWorld(Vector3(35, 2, 0)));
+    m_AppleChain.push_back(AddAppleToWorld(Vector3(35, 2, 0)));
 
     AddParkKeeperToWorld(Vector3(40, 5, 0));
     AddCharacterToWorld(Vector3(45, 5, 0));
@@ -334,6 +364,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
     Vector3 floorSize = Vector3(100, 2, 100);
     auto* volume = new AABBVolume(floorSize);
     floor->SetBoundingVolume((CollisionVolume*) volume);
+    //floor->GetTransform().SetLocalOrientation(Quaternion(0.0f, 0.5f, 0.5f, 1.0f));
     floor->GetTransform().SetWorldScale(floorSize);
     floor->GetTransform().SetWorldPosition(position);
 
