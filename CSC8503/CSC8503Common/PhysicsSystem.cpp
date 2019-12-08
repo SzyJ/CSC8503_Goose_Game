@@ -242,12 +242,28 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
     const float j = (-impulseForce * (1.0f + cRestitution)) / (massSum + angularEffect);
     
     const Vector3 fullImpulse = p.Normal * j;
+
+
+    if (!strcmp(a.GetName().c_str(), "Goose") &&
+        !strcmp(b.GetName().c_str(), "Apple")) {
+
+        bPhysObj->ApplyLinearImpulse(fullImpulse);
+        bPhysObj->ApplyAngularImpulse(bRelPos.Cross(fullImpulse));
+
+    } else if (!strcmp(a.GetName().c_str(), "Apple") &&
+        !strcmp(b.GetName().c_str(), "Goose")) {
+
+        aPhysObj->ApplyLinearImpulse(-fullImpulse);
+        aPhysObj->ApplyAngularImpulse(aRelPos.Cross(-fullImpulse));
+
+    } else {
+        aPhysObj->ApplyLinearImpulse(-fullImpulse);
+        bPhysObj->ApplyLinearImpulse(fullImpulse);
     
-    aPhysObj->ApplyLinearImpulse(-fullImpulse);
-    bPhysObj->ApplyLinearImpulse(fullImpulse);
+        aPhysObj->ApplyAngularImpulse(aRelPos.Cross(-fullImpulse));
+        bPhysObj->ApplyAngularImpulse(bRelPos.Cross(fullImpulse));
+    }
     
-    aPhysObj->ApplyAngularImpulse(aRelPos.Cross(-fullImpulse));
-    bPhysObj->ApplyAngularImpulse(bRelPos.Cross(fullImpulse));
 }
 
 /*

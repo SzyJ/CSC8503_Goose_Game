@@ -18,9 +18,8 @@ namespace NCL {
         class NetworkObject;
         class GameObject {
         public:
-           GameObject(string objectName = "")
-                : m_Name(objectName), m_IsActive(true) {
-            }
+            GameObject(string objectName = "")
+                : m_Name(objectName), m_IsActive(true) { }
 
             virtual ~GameObject() {
                 delete m_BoundingVolume;
@@ -52,9 +51,9 @@ namespace NCL {
             void SetSleep(bool sleepState) {
                 m_IsSleeping = sleepState;
 
-               if (!sleepState) {
-                   m_PositionDeltaQueue.clear();
-               }
+                if (!sleepState) {
+                    m_PositionDeltaQueue.clear();
+                }
             }
 
             const Transform& GetConstTransform() const {
@@ -91,7 +90,6 @@ namespace NCL {
                 if (m_IsSleeping) {
                     m_RenderObject->SetColour(Vector3(1.0f, 0.0f, 0.0f));
                 } else {
-                    //m_RenderObject->SetColour(Vector3(1.0f, 1.0f, 0.0f));
                     m_RenderObject->SetColour(Vector3(1.0f, 1.0f, 1.0f));
                 }
 
