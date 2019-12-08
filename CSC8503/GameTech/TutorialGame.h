@@ -35,8 +35,8 @@ namespace NCL {
             bool SelectObject();
             void MoveSelectedObject();
             void DebugObjectMovement();
-            void LockedObjectMovement();
-            void LockedCameraMovement();
+            void MoveGoose();
+            void UpdateCamPosition();
 
             void UpdateAppleForces();
 
@@ -73,12 +73,7 @@ namespace NCL {
             OGLMesh* m_CharB = nullptr;
 
             //Coursework Additional functionality	
-            GameObject* m_LockedObject = nullptr;
             Vector3 m_LockedOffset = Vector3(0, 14, 20);
-
-            void LockCameraToObject(GameObject* o) {
-                m_LockedObject = o;
-            }
         };
 
     }

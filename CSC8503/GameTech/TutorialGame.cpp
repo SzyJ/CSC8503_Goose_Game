@@ -69,9 +69,6 @@ void TutorialGame::UpdateGame(float dt) {
     if (!m_InSelectionMode) {
         m_World->GetMainCamera()->UpdateCamera(dt);
     }
-    if (m_LockedObject != nullptr) {
-        LockedCameraMovement();
-    }
 
     UpdateKeys();
 
@@ -157,14 +154,13 @@ void TutorialGame::UpdateKeys() {
         m_World->ShuffleObjects(false);
     }
 
-    if (m_LockedObject) {
-        LockedObjectMovement();
-    } else {
-        DebugObjectMovement();
-    }
+    MoveGoose();
+    UpdateCamPosition();
+
+    DebugObjectMovement();
 }
 
-void TutorialGame::LockedObjectMovement() {
+void TutorialGame::MoveGoose() {
     Matrix4 view = m_World->GetMainCamera()->BuildViewMatrix();
     Matrix4 camWorld = view.Inverse();
 
@@ -176,41 +172,28 @@ void TutorialGame::LockedObjectMovement() {
 
     Vector3 fwdAxis = Vector3::Cross(Vector3(0, 1, 0), rightAxis);
 
-    if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT)) {
-        m_SelectionObject->GetPhysicsObject()->AddForce(-rightAxis);
+    const float moveForce = 100.0f;
+
+    if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
+        m_Goose->GetPhysicsObject()->AddForce(-rightAxis * moveForce);
     }
 
-    if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT)) {
-        m_SelectionObject->GetPhysicsObject()->AddForce(rightAxis);
+    if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
+        m_Goose->GetPhysicsObject()->AddForce(rightAxis * moveForce);
     }
 
-    if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
-        m_SelectionObject->GetPhysicsObject()->AddForce(fwdAxis);
+    if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
+        m_Goose->GetPhysicsObject()->AddForce(fwdAxis * moveForce);
     }
 
-    if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
-        m_SelectionObject->GetPhysicsObject()->AddForce(-fwdAxis);
-    }
-}
-
-void TutorialGame::LockedCameraMovement() {
-    if (m_LockedObject != nullptr) {
-        Vector3 objPos = m_LockedObject->GetTransform().GetWorldPosition();
-        Vector3 camPos = objPos + m_LockedOffset;
-
-        Matrix4 temp = Matrix4::BuildViewMatrix(camPos, objPos, Vector3(0, 1, 0));
-
-        Matrix4 modelMat = temp.Inverse();
-
-        Quaternion q(modelMat);
-        Vector3 angles = q.ToEuler(); //nearly there now!
-
-        m_World->GetMainCamera()->SetPosition(camPos);
-        m_World->GetMainCamera()->SetPitch(angles.x);
-        m_World->GetMainCamera()->SetYaw(angles.y);
+    if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
+        m_Goose->GetPhysicsObject()->AddForce(-fwdAxis * moveForce);
     }
 }
 
+void TutorialGame::UpdateCamPosition() {
+    m_World->GetMainCamera()->SetPosition(m_Goose->GetTransform().GetWorldPosition());
+}
 
 void TutorialGame::DebugObjectMovement() {
     //If we've selected an object, we can manipulate it with some key presses
@@ -286,15 +269,6 @@ bool TutorialGame::SelectObject() {
                 return false;
             }
         }
-        if (Window::GetKeyboard()->KeyPressed(NCL::KeyboardKeys::L)) {
-            if (m_SelectionObject) {
-                if (m_LockedObject == m_SelectionObject) {
-                    m_LockedObject = nullptr;
-                } else {
-                    m_LockedObject = m_SelectionObject;
-                }
-            }
-        }
     } else {
         m_Renderer->DrawString("Press Esc to change to select mode!", Vector2(10, 0));
     }
@@ -338,7 +312,6 @@ void TutorialGame::InitCamera() {
     m_World->GetMainCamera()->SetPitch(-15.0f);
     m_World->GetMainCamera()->SetYaw(315.0f);
     m_World->GetMainCamera()->SetPosition(Vector3(-60, 40, 60));
-    m_LockedObject = nullptr;
 }
 
 void TutorialGame::InitWorld() {

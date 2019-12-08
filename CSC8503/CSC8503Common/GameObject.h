@@ -86,13 +86,6 @@ namespace NCL {
 
                 const size_t queueSize = m_PositionDeltaQueue.size();
                 
-
-                if (m_IsSleeping) {
-                    m_RenderObject->SetColour(Vector3(1.0f, 0.0f, 0.0f));
-                } else {
-                    m_RenderObject->SetColour(Vector3(1.0f, 1.0f, 1.0f));
-                }
-
                 if (queueSize >= 5) {
                     posDeltaAvg /= queueSize;
                     //m_IsSleeping = posDeltaAvg.GetAbsMaxElement() < 0.5f;
