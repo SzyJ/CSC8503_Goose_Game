@@ -10,17 +10,25 @@ void PhysicsObject::ApplyAngularImpulse(const Vector3& force) {
 }
 
 void PhysicsObject::ApplyLinearImpulse(const Vector3& force) {
+    if (m_InverseMass - FLT_EPSILON > 0.0f) {
+        SetSleep(false);
+    }
+
     m_LinearVelocity += force * m_InverseMass;
 }
 
 void PhysicsObject::AddForce(const Vector3& addedForce) {
+    if (m_InverseMass - FLT_EPSILON > 0.0f) {
+        SetSleep(false);
+    }
+
     m_Force += addedForce;
 }
 
 void PhysicsObject::AddForceAtPosition(const Vector3& addedForce, const Vector3& position) {
     Vector3 localPos = position - m_Transform->GetWorldPosition();
 
-    m_Force += addedForce;
+    AddForce(addedForce);
     m_Torque += Vector3::Cross(localPos, addedForce);
 }
 

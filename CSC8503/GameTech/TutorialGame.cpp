@@ -80,9 +80,13 @@ void TutorialGame::UpdateGame(float dt) {
     }
 
     SelectObject();
-    MoveSelectedObject();
+    if (m_InSelectionMode) {
+        MoveSelectedObject();
+    }
 
     UpdateAppleForces();
+
+    UpdateGooseOrientation();
 
     m_World->UpdateWorld(dt);
     m_Renderer->Update(dt);
@@ -115,18 +119,43 @@ void TutorialGame::UpdateAppleForces() {
             targetPosition = direction.Normalised() * objDistance;
         }
 
-        //targetPosition.Normalise();
-
         float forceStrength = (15.0f * 5.0f) - (5.0f * 1.0f);
 
         thisApple->GetPhysicsObject()->AddForce(targetPosition * forceStrength);
     }
 }
 
+void TutorialGame::UpdateGooseOrientation() {
+    const float snappiness = 1.0f;
+
+    Vector3 flatVel = m_Goose->GetPhysicsObject()->GetLinearVelocity();
+    flatVel.Normalise();
+
+    if (flatVel.x > 0.0f - FLT_EPSILON &&
+        flatVel.x < 0.0f + FLT_EPSILON &&
+        flatVel.z > 0.0f - FLT_EPSILON &&
+        flatVel.z < 0.0f + FLT_EPSILON) {
+
+        return;
+    }
+
+    float targetAngle = atan2(flatVel.x, flatVel.z);
+
+    Quaternion targetOrientation;
+    targetOrientation.x = 0.0f;
+    targetOrientation.y = sin(targetAngle * 0.5f);
+    targetOrientation.z = 0.0f;
+    targetOrientation.w = cos(targetAngle * 0.5f);
+
+    Quaternion currentOrientation = m_Goose->GetTransform().GetLocalOrientation();
+    currentOrientation.Normalise();
+    float currentAngle = asin(currentOrientation.y) * 2.0f;
+    m_Goose->GetPhysicsObject()->AddTorque(Vector3(0.0f, (targetAngle - currentAngle) * snappiness, 0.0f));
+}
+
 void TutorialGame::UpdateKeys() {
     if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F1)) {
         InitWorld(); //We can reset the simulation at any time with F1
-        m_SelectionObject = nullptr;
     }
 
     if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F2)) {
@@ -157,8 +186,6 @@ void TutorialGame::UpdateKeys() {
 
     MoveGoose();
     UpdateCamPosition();
-
-    DebugObjectMovement();
 }
 
 void TutorialGame::MoveGoose() {
@@ -176,20 +203,30 @@ void TutorialGame::MoveGoose() {
     const float moveForce = 100.0f;
 
     if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
+        m_Goose->SetSleep(false);
         m_Goose->GetPhysicsObject()->AddForce(-rightAxis * moveForce);
     }
 
     if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
+        m_Goose->SetSleep(false);
         m_Goose->GetPhysicsObject()->AddForce(rightAxis * moveForce);
     }
 
     if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
+        m_Goose->SetSleep(false);
         m_Goose->GetPhysicsObject()->AddForce(fwdAxis * moveForce);
     }
 
     if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
+        m_Goose->SetSleep(false);
         m_Goose->GetPhysicsObject()->AddForce(-fwdAxis * moveForce);
     }
+
+    if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE)) {
+        m_Goose->SetSleep(false);
+        m_Goose->GetPhysicsObject()->AddForce(Vector3(0.0f, 1.0f, 0.0f) * moveForce);
+    }
+
 }
 
 void TutorialGame::UpdateCamPosition() {
@@ -204,40 +241,6 @@ void TutorialGame::UpdateCamPosition() {
     camPosOffset -= facingDir * maxCamDist;
 
     m_World->GetMainCamera()->SetPosition(camPosOffset);
-}
-
-void TutorialGame::DebugObjectMovement() {
-    //If we've selected an object, we can manipulate it with some key presses
-    if (m_InSelectionMode && m_SelectionObject) {
-        //Twist the selected object!
-        if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT)) {
-            m_SelectionObject->GetPhysicsObject()->AddTorque(Vector3(-10, 0, 0));
-        }
-
-        if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT)) {
-            m_SelectionObject->GetPhysicsObject()->AddTorque(Vector3(10, 0, 0));
-        }
-
-        if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM7)) {
-            m_SelectionObject->GetPhysicsObject()->AddTorque(Vector3(0, 10, 0));
-        }
-
-        if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM8)) {
-            m_SelectionObject->GetPhysicsObject()->AddTorque(Vector3(0, -10, 0));
-        }
-
-        if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
-            m_SelectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -10));
-        }
-
-        if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
-            m_SelectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 10));
-        }
-
-        if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM5)) {
-            m_SelectionObject->GetPhysicsObject()->AddForce(Vector3(0, -10, 0));
-        }
-    }
 }
 
 /*
@@ -259,27 +262,9 @@ bool TutorialGame::SelectObject() {
             Window::GetWindow()->LockMouseToWindow(true);
         }
     }
+
     if (m_InSelectionMode) {
         m_Renderer->DrawString("Press Esc to change to camera mode!", Vector2(10, 0));
-
-        if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT)) {
-            if (m_SelectionObject) {
-                //set colour to deselected;
-                m_SelectionObject->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
-                m_SelectionObject = nullptr;
-            }
-
-            Ray ray = CollisionDetection::BuildRayFromMouse(*m_World->GetMainCamera());
-
-            RayCollision closestCollision;
-            if (m_World->Raycast(ray, closestCollision, true)) {
-                m_SelectionObject = (GameObject*) closestCollision.Node;
-                m_SelectionObject->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
-                return true;
-            } else {
-                return false;
-            }
-        }
     } else {
         m_Renderer->DrawString("Press Esc to change to select mode!", Vector2(10, 0));
     }
@@ -294,10 +279,6 @@ line - after the third, they'll be able to twist under torque aswell.
 */
 
 void TutorialGame::MoveSelectedObject() {
-    if (!m_SelectionObject) {
-        return;
-    }
-
     m_ForceMagnitude += Window::GetMouse()->GetWheelMovement() * 100.0f;
 
     if (m_InSelectionMode) {
@@ -310,8 +291,9 @@ void TutorialGame::MoveSelectedObject() {
         RayCollision closestCollision;
 
         if (m_World->Raycast(ray, closestCollision, true)) {
-            if (closestCollision.Node == m_SelectionObject) {
-                m_SelectionObject->GetPhysicsObject()->AddForceAtPosition(ray.GetDirection() * m_ForceMagnitude, closestCollision.CollidedAt);
+
+            if (closestCollision.Node) {
+                ((GameObject*) closestCollision.Node)->GetPhysicsObject()->AddForceAtPosition(ray.GetDirection() * m_ForceMagnitude, closestCollision.CollidedAt);
             }
         }
     }

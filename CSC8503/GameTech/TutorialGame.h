@@ -34,11 +34,11 @@ namespace NCL {
 
             bool SelectObject();
             void MoveSelectedObject();
-            void DebugObjectMovement();
             void MoveGoose();
             void UpdateCamPosition();
 
             void UpdateAppleForces();
+            void UpdateGooseOrientation();
 
             GameObject* AddFloorToWorld(const Vector3& position);
             GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
@@ -59,7 +59,6 @@ namespace NCL {
             bool m_InSelectionMode;
             float m_ForceMagnitude;
 
-            GameObject* m_SelectionObject = nullptr;
             OGLMesh* m_CubeMesh = nullptr;
             OGLMesh* m_SphereMesh = nullptr;
             OGLTexture* m_BasicTex = nullptr;

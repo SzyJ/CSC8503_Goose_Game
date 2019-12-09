@@ -73,11 +73,9 @@ bool CollisionDetection::RayBoxIntersection(const Ray& r, const Vector3& boxPos,
 
     Vector3 intersection = rayPosition + (rayDirection * distanceToPoint);
 
-    const float epsilon = 0.0001f;
-
     for (int vecPos = 0; vecPos < 3; ++vecPos) {
-        if (intersection[vecPos] + epsilon < boxMin[vecPos] ||
-            intersection[vecPos] - epsilon > boxMax[vecPos]) {
+        if (intersection[vecPos] + FLT_EPSILON < boxMin[vecPos] ||
+            intersection[vecPos] - FLT_EPSILON > boxMax[vecPos]) {
             return false;
         }
     }
@@ -142,9 +140,10 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
         return false;
     }
 
-    //if (a->IsSleeping() && b->IsSleeping()) {
-    //    return false;
-    //}
+    if (a->IsSleeping() && b->IsSleeping()) {
+        return false;
+    }
+
 
     collisionInfo.A = a;
     collisionInfo.B = b;
@@ -155,12 +154,11 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
     unsigned int pairType = aVolume->TypeAsInt() | bVolume->TypeAsInt();
 
     if (pairType & static_cast<unsigned int>(VolumeType::OBB) &&
-        pairType& static_cast<unsigned int>(VolumeType::Sphere)) {
+        pairType & static_cast<unsigned int>(VolumeType::Sphere)) {
         if (aVolume->Type == VolumeType::OBB &&
             bVolume->Type == VolumeType::Sphere) {
             return OBBSphereIntersection((OBBVolume&)*aVolume, aTransform, (SphereVolume&)*bVolume, bTransform, collisionInfo);
-        }
-        else if (
+        } else if (
             aVolume->Type == VolumeType::Sphere &&
             bVolume->Type == VolumeType::OBB) {
             collisionInfo.A = b;

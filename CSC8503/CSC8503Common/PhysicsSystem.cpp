@@ -15,14 +15,6 @@ using namespace CSC8503;
 
 void PhysicsSystem::SetGravity(const Vector3& g) {
     m_Gravity = g;
-
-    std::vector<GameObject*>::const_iterator first;
-    std::vector<GameObject*>::const_iterator last;
-    m_GameWorld.GetObjectIterators(first, last);
-
-    for (auto i = first; i != last; ++i) {
-        (*i)->SetSleep(false);
-    }
 }
 
 /*
@@ -97,6 +89,8 @@ void PhysicsSystem::Update(float dt) {
         IntegrateVelocity(iterationDt); //update positions from new velocity changes
 
         m_DTOffset -= iterationDt;
+
+        UpdateDebugColours();
     }
     ClearForces(); //Once we've finished with the forces, reset them to zero
 
@@ -104,6 +98,24 @@ void PhysicsSystem::Update(float dt) {
     //std::cout << iteratorCount << " , " << iterationDt << std::endl;
     //float time = testTimer.GetTimeDeltaSeconds();
     //std::cout << "Physics time taken: " << time << std::endl;
+}
+
+void PhysicsSystem::ApplyGravity() {
+    const float gravStrength = 9.81f;
+
+    std::vector<GameObject*>::const_iterator first;
+    std::vector<GameObject*>::const_iterator last;
+    m_GameWorld.GetObjectIterators(first, last);
+
+    for (auto i = first; i != last; ++i) {
+        float invMass = (*i)->GetPhysicsObject()->GetInverseMass();
+
+        if ((*i)->IsSleeping() || invMass - FLT_EPSILON < 0.0f) {
+            continue;
+        }
+
+        (*i)->GetPhysicsObject()->AddForce(Vector3(0.0f, -1.0f, 0.0f) * gravStrength * (1.0f / invMass));
+    }
 }
 
 /*
@@ -337,9 +349,9 @@ void PhysicsSystem::IntegrateAccel(float dt) {
     m_GameWorld.GetObjectIterators(first, last);
 
     for (auto obj = first; obj < last; ++obj) {
-        //if ((*obj)->IsSleeping()) {
-        //    continue;
-        //}
+        if ((*obj)->IsSleeping()) {
+            continue;
+        }
 
         PhysicsObject* physObject = (*obj)->GetPhysicsObject();
 
@@ -355,19 +367,7 @@ void PhysicsSystem::IntegrateAccel(float dt) {
 
         if (m_ApplyGravity && invMass > 0) {
             Vector3 gravAccel = m_Gravity;
-            
-            if (gravAccel.x > 100.0f) {
-                gravAccel.x = 100.f;
-            }
-
-            if (gravAccel.y > 100.0f) {
-                gravAccel.y = 100.f;
-            }
-
-            if (gravAccel.z > 100.0f) {
-                gravAccel.z = 100.f;
-            }
-
+        
             accel += gravAccel;
         }
 
@@ -403,9 +403,9 @@ void PhysicsSystem::IntegrateVelocity(float dt) {
     float frameDampening = powf(dampeningFactor, dt);
 
     for (auto obj = first; obj < last; ++obj) {
-        //if ((*obj)->IsSleeping()) {
-        //    continue;
-        //}
+        if ((*obj)->IsSleeping()) {
+            continue;
+        }
 
         PhysicsObject* physObject = (*obj)->GetPhysicsObject();
         if (!physObject) {
@@ -470,5 +470,20 @@ void PhysicsSystem::UpdateConstraints(float dt) {
 
     for (auto i = first; i != last; ++i) {
         (*i)->UpdateConstraint(dt);
+    }
+}
+
+
+void PhysicsSystem::UpdateDebugColours() {
+    std::vector<GameObject*>::const_iterator first;
+    std::vector<GameObject*>::const_iterator last;
+    m_GameWorld.GetObjectIterators(first, last);
+
+    for (auto i = first; i != last; ++i) {
+        if ((*i)->IsSleeping()) {
+            (*i)->GetRenderObject()->SetColour(Vector3(1.0, 0.0f, 0.0f));
+        } else {
+            (*i)->GetRenderObject()->SetColour(Vector3(1.0, 1.0f, 1.0f));
+        }
     }
 }

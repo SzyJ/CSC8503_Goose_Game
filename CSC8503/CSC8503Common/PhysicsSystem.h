@@ -9,7 +9,7 @@ namespace NCL {
         class PhysicsSystem {
         public:
             PhysicsSystem(GameWorld& g)
-                : m_GameWorld(g), m_ApplyGravity(false), m_DTOffset(0.0f), m_GlobalDamping(0.95f) {
+                : m_GameWorld(g), m_DTOffset(0.0f), m_GlobalDamping(0.95f) {
                 SetGravity(Vector3(0.0f, -9.81f, 0.0f));
             }
             ~PhysicsSystem() = default;
@@ -20,6 +20,14 @@ namespace NCL {
 
             void UseGravity(bool state) {
                 m_ApplyGravity = state;
+
+                std::vector<GameObject*>::const_iterator first;
+                std::vector<GameObject*>::const_iterator last;
+                m_GameWorld.GetObjectIterators(first, last);
+
+                for (auto i = first; i != last; ++i) {
+                    (*i)->GetPhysicsObject()->SetSleep(false);
+                }
             }
 
             void SetGlobalDamping(float d) {
@@ -43,11 +51,15 @@ namespace NCL {
             void UpdateCollisionList();
             void UpdateObjectAABBs();
 
+            void UpdateDebugColours();
+
+            void ApplyGravity();
+
             void ImpulseResolveCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const;
 
             GameWorld& m_GameWorld;
 
-            bool m_ApplyGravity;
+            bool m_ApplyGravity = true;
 
             Vector3 m_Gravity;
 
