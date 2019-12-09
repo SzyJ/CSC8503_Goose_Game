@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "Window.h"
 #include <algorithm>
+#include "Maths.h"
 
 using namespace NCL;
 
@@ -25,29 +26,7 @@ void Camera::UpdateCamera(float dt) {
 		yaw -= 360.0f;
 	}
 
-    //const float camSpeed = 50.0f;
-	//const float frameSpeed = camSpeed * dt;
-    //
-	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
-	//	position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
-	//}
-	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
-	//	position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
-	//}
-    //
-	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
-	//	position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * frameSpeed;
-	//}
-	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
-	//	position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * frameSpeed;
-	//}
-    //
-	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT)) {
-	//	position.y -= frameSpeed * 0.75f;
-	//}
-	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE)) {
-	//	position.y += frameSpeed * 0.75f;
-	//}
+    UpdateCameraVectors();
 }
 
 /*
@@ -99,4 +78,16 @@ Camera Camera::BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, floa
 	c.bottom	= bottom;
 
 	return c;
+}
+
+void Camera::UpdateCameraVectors() {
+    Vector3 front;
+    front.x = sin(Maths::DegreesToRadians(yaw)) * cos(Maths::DegreesToRadians(pitch));
+    front.y = sin(Maths::DegreesToRadians(pitch));
+    front.z = cos(Maths::DegreesToRadians(yaw)) * cos(Maths::DegreesToRadians(pitch));
+
+    frontDir = front.Normalised();
+
+    rightDir = frontDir.Cross(worldUp).Normalised();
+    upDir = rightDir.Cross(frontDir).Normalised();
 }

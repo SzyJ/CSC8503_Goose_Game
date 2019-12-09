@@ -77,12 +77,20 @@ namespace NCL {
 		//Gets yaw, in degrees
 		float	GetYaw()   const { return yaw; }
 		//Sets yaw, in degrees
-		void	SetYaw(float y) { yaw = y; }
+		void	SetYaw(float y) {
+		    yaw = y;
+            UpdateCameraVectors();
+		}
 
 		//Gets pitch, in degrees
 		float	GetPitch() const { return pitch; }
 		//Sets pitch, in degrees
-		void	SetPitch(float p) { pitch = p; }
+		void	SetPitch(float p) {
+		    pitch = p;
+            UpdateCameraVectors();
+		}
+
+        Vector3 GetPointingDirection() { return frontDir; }
 
 		static Camera BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw, float fov, float near, float far);
 		static Camera BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, float left, float right, float top, float bottom, float near, float far);
@@ -99,6 +107,15 @@ namespace NCL {
 		float	fov;
 		float	yaw;
 		float	pitch;
+
 		Vector3 position;
+
+        const Vector3 worldUp = Vector3(0.0f, 1.0f, 0.0f);
+
+        Vector3 frontDir;
+        Vector3 upDir;
+        Vector3 rightDir;
+
+        inline void UpdateCameraVectors();
 	};
 }

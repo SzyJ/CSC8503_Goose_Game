@@ -6,6 +6,7 @@
 #include "../../Common/TextureLoader.h"
 
 #include "../CSC8503Common/PositionConstraint.h"
+#include "../../Common/Maths.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -192,7 +193,17 @@ void TutorialGame::MoveGoose() {
 }
 
 void TutorialGame::UpdateCamPosition() {
-    m_World->GetMainCamera()->SetPosition(m_Goose->GetTransform().GetWorldPosition());
+    const float maxCamDist = 15.0f;
+
+    Vector3 facingDir = m_World->GetMainCamera()->GetPointingDirection();
+    Vector3 camPosOffset = m_Goose->GetTransform().GetWorldPosition();
+
+    facingDir.z = -facingDir.z;
+    facingDir.x = -facingDir.x;
+
+    camPosOffset -= facingDir * maxCamDist;
+
+    m_World->GetMainCamera()->SetPosition(camPosOffset);
 }
 
 void TutorialGame::DebugObjectMovement() {
