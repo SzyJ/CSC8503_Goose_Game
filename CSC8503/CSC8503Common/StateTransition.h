@@ -27,8 +27,8 @@ namespace NCL {
         public:
             typedef bool (*GenericTransitionFunc)(T, U);
 
-            GenericTransition(GenericTransitionFunc f, T testData, U otherData, State* srcState, State* destState) :
-                m_DataA(testData), m_DataB(otherData), m_Func(f) {
+            GenericTransition(GenericTransitionFunc f, T testData, U otherData, State* srcState, State* destState)
+                : m_DataA(testData), m_DataB(otherData), m_Func(f) {
                 m_SourceState = srcState;
                 m_DestinationState = destState;
             }

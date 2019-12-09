@@ -18,7 +18,7 @@ namespace NCL {
             GenericState(StateFunc someFunc, void* someData)
                 : m_Func(someFunc), m_FuncData(someData) { }
 
-            virtual void Update() {
+            void Update() override {
                 if (m_FuncData != nullptr) {
                     m_Func(m_FuncData);
                 }
