@@ -100,24 +100,6 @@ void PhysicsSystem::Update(float dt) {
     //std::cout << "Physics time taken: " << time << std::endl;
 }
 
-void PhysicsSystem::ApplyGravity() {
-    const float gravStrength = 9.81f;
-
-    std::vector<GameObject*>::const_iterator first;
-    std::vector<GameObject*>::const_iterator last;
-    m_GameWorld.GetObjectIterators(first, last);
-
-    for (auto i = first; i != last; ++i) {
-        float invMass = (*i)->GetPhysicsObject()->GetInverseMass();
-
-        if ((*i)->IsSleeping() || invMass - FLT_EPSILON < 0.0f) {
-            continue;
-        }
-
-        (*i)->GetPhysicsObject()->AddForce(Vector3(0.0f, -1.0f, 0.0f) * gravStrength * (1.0f / invMass));
-    }
-}
-
 /*
 Later on we're going to need to keep track of collisions
 across multiple frames, so we store them in a set.

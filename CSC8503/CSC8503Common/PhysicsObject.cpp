@@ -6,6 +6,9 @@ using namespace NCL;
 using namespace CSC8503;
 
 void PhysicsObject::ApplyAngularImpulse(const Vector3& force) {
+    if (m_InverseMass - FLT_EPSILON > 0.0f) {
+        SetSleep(false);
+    }
     m_AngularVelocity += m_InverseInteriaTensor * force;
 }
 
@@ -26,6 +29,9 @@ void PhysicsObject::AddForce(const Vector3& addedForce) {
 }
 
 void PhysicsObject::AddForceAtPosition(const Vector3& addedForce, const Vector3& position) {
+    if (m_InverseMass - FLT_EPSILON > 0.0f) {
+        SetSleep(false);
+    }
     Vector3 localPos = position - m_Transform->GetWorldPosition();
 
     AddForce(addedForce);
@@ -33,6 +39,9 @@ void PhysicsObject::AddForceAtPosition(const Vector3& addedForce, const Vector3&
 }
 
 void PhysicsObject::AddTorque(const Vector3& addedTorque) {
+    if (m_InverseMass - FLT_EPSILON > 0.0f) {
+        SetSleep(false);
+    }
     m_Torque += addedTorque;
 }
 

@@ -53,8 +53,6 @@ namespace NCL {
 
             void UpdateDebugColours();
 
-            void ApplyGravity();
-
             void ImpulseResolveCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const;
 
             GameWorld& m_GameWorld;
