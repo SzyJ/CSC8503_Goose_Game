@@ -2,6 +2,7 @@
 #include "../../Common/Assets.h"
 
 #include <fstream>
+#include "Debug.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -155,6 +156,21 @@ bool NavigationGrid::FindPath(const Vector3& from, const Vector3& to, Navigation
     }
 
     return false; //open list emptied out with no path!
+}
+
+void NavigationGrid::DebugDrawGrid() {
+    //now to build the connectivity between the nodes
+    for (int y = 0; y < m_GridHeight; ++y) {
+        for (int x = 0; x < m_GridWidth; ++x) {
+            GridNode& n = m_AllNodes[(m_GridWidth * y) + x];
+
+            if (n.Type == 'x') {
+                Debug::DrawCube(n.Position, 5.0f, Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+            } else {
+                Debug::DrawCube(n.Position, 2.0f, Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+            }
+        }
+    }
 }
 
 bool NavigationGrid::NodeInList(GridNode* n, std::vector<GridNode*>& list) const {

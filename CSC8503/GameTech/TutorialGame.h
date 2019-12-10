@@ -38,6 +38,7 @@ namespace NCL {
             void UpdateCamPosition();
 
             void UpdateAppleForces();
+            void UpdateKeeperForces();
             void UpdateGooseOrientation();
 
             GameObject* AddFloorToWorld(const Vector3& position);
@@ -51,6 +52,7 @@ namespace NCL {
 
             std::vector<GameObject*> m_AppleChain;
             GameObject* m_Goose;
+            GameObject* m_Keeper;
 
             GameTechRenderer* m_Renderer;
             PhysicsSystem* m_Physics;

@@ -1,13 +1,13 @@
-20 // how many units on each axis is each grid
-10 // how many grid nodes across
-10 // how many grid nodes down
+20
+10
+10
 xxxxxxxxxx
-x........x // Can we find a path from here
+x........x
 x........x
 x....xxxxx
 x........x
 xxxxxx...x
 x......xxx
 x..xxxxxxx
-x........x // To here ??
+x........x
 xxxxxxxxxx

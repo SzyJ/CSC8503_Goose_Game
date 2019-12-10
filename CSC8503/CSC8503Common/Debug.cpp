@@ -28,6 +28,82 @@ void Debug::DrawLine(const Vector3& startpoint, const Vector3& endpoint, const V
     s_LineEntries.emplace_back(newEntry);
 }
 
+void Debug::DrawCube(const Vector3& position, const float size, const Vector4& colour) {
+    // draw the cube's bounding lines
+    DrawLine(
+        Vector3(position.x - size, position.y + size, position.z + size),
+        Vector3(position.x + size, position.y + size, position.z + size),
+        colour
+    );
+
+    DrawLine(
+        Vector3(position.x - size, position.y - size, position.z + size),
+        Vector3(position.x + size, position.y - size, position.z + size),
+        colour
+    );
+
+    DrawLine(
+        Vector3(position.x - size, position.y - size, position.z - size),
+        Vector3(position.x + size, position.y - size, position.z - size),
+        colour
+    );
+
+    DrawLine(
+        Vector3(position.x - size, position.y + size, position.z - size),
+        Vector3(position.x + size, position.y + size, position.z - size),
+        colour
+    );
+
+    DrawLine(
+        Vector3(position.x + size, position.y - size, position.z + size),
+        Vector3(position.x + size, position.y + size, position.z + size),
+        colour
+    );
+
+    DrawLine(
+        Vector3(position.x + size, position.y - size, position.z - size),
+        Vector3(position.x + size, position.y + size, position.z - size),
+        colour
+    );
+
+    DrawLine(
+        Vector3(position.x - size, position.y - size, position.z - size),
+        Vector3(position.x - size, position.y + size, position.z - size),
+        colour
+    );
+
+    DrawLine(
+        Vector3(position.x - size, position.y - size, position.z + size),
+        Vector3(position.x - size, position.y + size, position.z + size),
+        colour
+    );
+
+    DrawLine(
+        Vector3(position.x + size, position.y + size, position.z - size),
+        Vector3(position.x + size, position.y + size, position.z + size),
+        colour
+    );
+
+    DrawLine(
+        Vector3(position.x + size, position.y - size, position.z - size),
+        Vector3(position.x + size, position.y - size, position.z + size),
+        colour
+    );
+
+    DrawLine(
+        Vector3(position.x - size, position.y - size, position.z - size),
+        Vector3(position.x - size, position.y - size, position.z + size),
+        colour
+    );
+
+    DrawLine(
+        Vector3(position.x - size, position.y + size, position.z - size),
+        Vector3(position.x - size, position.y + size, position.z + size),
+        colour
+    );
+}
+
+
 void Debug::FlushRenderables() {
     if (!s_Renderer) {
         return;

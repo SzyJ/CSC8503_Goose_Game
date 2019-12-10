@@ -125,6 +125,14 @@ void TutorialGame::UpdateAppleForces() {
     }
 }
 
+void TutorialGame::UpdateKeeperForces() {
+    if (m_AppleChain.empty()) {
+        return;
+    }
+
+
+}
+
 void TutorialGame::UpdateGooseOrientation() {
     const float snappiness = 1.0f;
 
@@ -317,7 +325,7 @@ void TutorialGame::InitWorld() {
     m_AppleChain.push_back(AddAppleToWorld(Vector3(35, 2, 0)));
     m_AppleChain.push_back(AddAppleToWorld(Vector3(35, 2, 0)));
 
-    AddParkKeeperToWorld(Vector3(40, 5, 0));
+    m_Keeper = AddParkKeeperToWorld(Vector3(40, 5, 0));
     AddCharacterToWorld(Vector3(45, 5, 0));
 
     AddFloorToWorld(Vector3(0, -2, 0));

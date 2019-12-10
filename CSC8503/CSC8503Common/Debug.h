@@ -11,6 +11,8 @@ namespace NCL {
         static void Print(const std::string& text, const Vector2& pos, const Vector4& colour = Vector4(1, 1, 1, 1));
         static void DrawLine(const Vector3& startpoint, const Vector3& endpoint, const Vector4& colour = Vector4(1, 1, 1, 1));
 
+        static void DrawCube(const Vector3& position, const float size, const Vector4& colour = Vector4(1, 1, 1, 1));
+
         static void SetRenderer(OGLRenderer* r) {
             s_Renderer = r;
         }
