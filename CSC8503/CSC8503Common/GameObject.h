@@ -92,14 +92,14 @@ namespace NCL {
                 //std::cout << "OnCollisionBegin event occured!\n";
 
                 if (m_Name == "Water") {
-                    const float offset = 3.0f;
-
                     Vector3 otherPosition = otherObject->GetConstTransform().GetWorldPosition();
-                    Vector3 buoyancyPosition(otherPosition);
-                    buoyancyPosition.y += m_Transform.GetLocalScale().y - offset;
+
+                    const float heightDelta = otherPosition.y - m_Transform.GetWorldPosition().y;
+
+                    const float floatOffset = m_Transform.GetLocalScale().y + 0.9f;
 
                     const float forceStrength = (10.0f * 5.0f) - (5.0f * 1.0f);
-                    otherObject->GetPhysicsObject()->AddForce((buoyancyPosition) * forceStrength);
+                    otherObject->GetPhysicsObject()->AddForce(Vector3(0.0f, heightDelta - floatOffset, 0.0f) * -forceStrength);
                 }
             }
 
