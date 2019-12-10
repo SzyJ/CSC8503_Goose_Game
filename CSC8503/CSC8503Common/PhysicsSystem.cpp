@@ -89,8 +89,6 @@ void PhysicsSystem::Update(float dt) {
         IntegrateVelocity(iterationDt); //update positions from new velocity changes
 
         m_DTOffset -= iterationDt;
-
-        UpdateDebugColours();
     }
     ClearForces(); //Once we've finished with the forces, reset them to zero
 
@@ -190,8 +188,14 @@ so that objects separate back out.
 
 */
 void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const {
+
+    if (a.GetName() == "Water" ||
+        b.GetName() == "Water") {
+        return;
+    }
+
     PhysicsObject* aPhysObj = a.GetPhysicsObject();
-    PhysicsObject * bPhysObj = b.GetPhysicsObject();
+    PhysicsObject* bPhysObj = b.GetPhysicsObject();
 
     Transform & aTransform = a.GetTransform();
     Transform & bTransform = b.GetTransform();

@@ -144,7 +144,6 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
         return false;
     }
 
-
     collisionInfo.A = a;
     collisionInfo.B = b;
 
@@ -166,7 +165,6 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
             return OBBSphereIntersection((OBBVolume&)*bVolume, bTransform, (SphereVolume&)*aVolume, aTransform, collisionInfo);
         }
     }
-
 
     if (pairType & static_cast<unsigned int>(VolumeType::AABB) &&
         pairType & static_cast<unsigned int>(VolumeType::Sphere)) {

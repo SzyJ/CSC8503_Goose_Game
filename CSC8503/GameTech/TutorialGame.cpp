@@ -130,7 +130,7 @@ void TutorialGame::UpdateKeeperForces() {
         return;
     }
 
-
+    // Perform pathfinding
 }
 
 void TutorialGame::UpdateGooseOrientation() {
@@ -328,6 +328,8 @@ void TutorialGame::InitWorld() {
     m_Keeper = AddParkKeeperToWorld(Vector3(40, 5, 0));
     AddCharacterToWorld(Vector3(45, 5, 0));
 
+    AddWaterTile(Vector3(10.f, 10.0f, -10.0f), Vector3(5.0f, 5.0f, 5.0f));
+
     AddFloorToWorld(Vector3(0, -2, 0));
 }
 
@@ -507,6 +509,29 @@ GameObject* TutorialGame::AddAppleToWorld(const Vector3& position) {
     m_World->AddGameObject(apple);
 
     return apple;
+}
+
+GameObject* TutorialGame::AddWaterTile(const Vector3& position, const Vector3& size) {
+    GameObject* cube = new GameObject("Water");
+
+    auto* volume = new AABBVolume(size);
+
+    cube->SetBoundingVolume((CollisionVolume*)volume);
+
+    cube->GetTransform().SetWorldPosition(position);
+    cube->GetTransform().SetWorldScale(size);
+
+    cube->SetRenderObject(new RenderObject(&cube->GetTransform(), m_CubeMesh, m_BasicTex, m_BasicShader));
+    cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
+
+    cube->GetPhysicsObject()->SetInverseMass(0.0f);
+    cube->GetPhysicsObject()->InitCubeInertia();
+
+    cube->GetRenderObject()->SetColour(Vector4(0.0f, 0.5f, 1.0f, 1.0f));
+
+    m_World->AddGameObject(cube);
+
+    return cube;
 }
 
 void TutorialGame::InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius) {

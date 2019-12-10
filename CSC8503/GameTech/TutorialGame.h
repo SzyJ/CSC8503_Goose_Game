@@ -50,9 +50,13 @@ namespace NCL {
             GameObject* AddCharacterToWorld(const Vector3& position);
             GameObject* AddAppleToWorld(const Vector3& position);
 
+            GameObject* AddWaterTile(const Vector3& position, const Vector3& size);
+
             std::vector<GameObject*> m_AppleChain;
             GameObject* m_Goose;
             GameObject* m_Keeper;
+
+            GameObject* m_Water;
 
             GameTechRenderer* m_Renderer;
             PhysicsSystem* m_Physics;
