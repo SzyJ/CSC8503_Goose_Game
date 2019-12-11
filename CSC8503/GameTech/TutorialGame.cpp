@@ -92,6 +92,8 @@ void TutorialGame::UpdateGame(float dt) {
 
     UpdateGooseOrientation();
 
+    UpdateKeeperForces();
+
     m_World->UpdateWorld(dt);
     m_Renderer->Update(dt);
     m_Physics->Update(dt);
@@ -134,14 +136,14 @@ void TutorialGame::UpdateObjectGravity() {
     std::vector<GameObject*>::const_iterator last;
     m_World->GetObjectIterators(first, last);
 
-    const float mapSize = static_cast<float>((m_GameState->GetMapWidth() + 0.5f) * m_GameState->GetNodeSize());
+    const float mapSize = static_cast<float>((m_GameState->GetMapWidth() - 0.5f) * m_GameState->GetNodeSize());
 
     for (auto obj = first; obj < last; ++obj) {
         auto trans = (*obj)->GetTransform();
 
         bool gravCalculated = false;
         Vector3 objGravDir(0.0f, 0.0f, 0.0f);
-        if (trans.GetWorldPosition().x < 0.0f) {
+        if (trans.GetWorldPosition().x < -0.5f * m_GameState->GetNodeSize()) {
             objGravDir.x = 1.0f;
             gravCalculated = true;
         } else if (trans.GetWorldPosition().x > mapSize) {
@@ -149,7 +151,7 @@ void TutorialGame::UpdateObjectGravity() {
             gravCalculated = true;
         }
 
-        if (trans.GetWorldPosition().z < 0.0f) {
+        if (trans.GetWorldPosition().z < -0.5f * m_GameState->GetNodeSize()) {
             objGravDir.z = 1.0f;
             gravCalculated = true;
         } else if (trans.GetWorldPosition().z > mapSize) {
@@ -176,10 +178,56 @@ void TutorialGame::UpdateKeeperForces() {
     }
 
     // Perform pathfinding
+    Vector3 keeperPos = m_Keeper->GetTransform().GetWorldPosition();
+
+    const float tolerence = 1.0f;
+
+    if (keeperPos.x + tolerence > m_NextWaypoint.x &&
+        keeperPos.x - tolerence < m_NextWaypoint.x &&
+        keeperPos.z + tolerence > m_NextWaypoint.z &&
+        keeperPos.z - tolerence < m_NextWaypoint.z) {
+    
+        std::cout << "Calulating Path!"<< std::endl;
+
+        // Checkpoint reached: recalculate path
+
+        NavigationPath path;
+        bool found = m_GameState->GetNavigationGrid()->FindPath(keeperPos, m_Goose->GetConstTransform().GetWorldPosition(), path);
+
+        if (!found) {
+            return;
+        }
+
+        Vector3 lastWP;
+        Vector3 thisWP;
+
+        path.PopWaypoint(lastWP);
+        path.PopWaypoint(lastWP);
+
+        m_NextWaypoint = lastWP;
+        
+        //while(path.PopWaypoint(thisWP)) {
+        //    thisWP.y = 11.0f;
+        //    lastWP.y = 11.0f;
+        //
+        //    Debug::DrawLine(lastWP, thisWP, Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+        //
+        //    lastWP = thisWP;
+        //}
+
+    }
+
+    //m_GameState->GetNavigationGrid()->DebugDrawGrid();
+
+    Vector3 dir((m_NextWaypoint - keeperPos));
+    dir.y = 0.0f;
+    dir.Normalise();
+
+    m_Keeper->GetPhysicsObject()->AddForce(dir * 100.0f);
 }
 
 void TutorialGame::UpdateGooseOrientation() {
-    const float snappiness = 1.0f;
+    const float snappiness = 3.0f;
 
     Vector3 flatVel = m_Goose->GetPhysicsObject()->GetLinearVelocity();
     flatVel.Normalise();
@@ -397,6 +445,7 @@ void TutorialGame::InitWorld() {
     keeperPos.y += m_GameState->HeightAt(keeperPos.x, keeperPos.z) * 1.0f;
     keeperPos.y += spawnOffset;
     m_Keeper = AddParkKeeperToWorld(keeperPos);
+    m_NextWaypoint = keeperPos;
     //AddCharacterToWorld();
 
     //AddWaterTile(Vector3(10.f, 10.0f, -10.0f), Vector3(5.0f, 5.0f, 5.0f));

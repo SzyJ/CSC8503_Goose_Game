@@ -58,6 +58,8 @@ namespace NCL {
 
             GameState* m_GameState;
 
+            Vector3 m_NextWaypoint;
+
             std::vector<GameObject*> m_AppleChain;
             GameObject* m_Goose;
             GameObject* m_Keeper;

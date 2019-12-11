@@ -58,7 +58,7 @@ vector<Vector3> testNodes;
 NavigationGrid* testGrid;
 
 void TestPathfinding() {
-    testGrid = new NavigationGrid("TestGrid1.txt");
+    testGrid = new NavigationGrid("main_path.gmap");
     NavigationPath outPath;
 
     Vector3 startPos(80, 0, 10);
@@ -80,10 +80,13 @@ void DisplayPathfinding() {
         Vector3 a = testNodes[i - 1];
         Vector3 b = testNodes[i];
 
+        a.y = 10.0f;
+        b.y = 10.0f;
+
         Debug::DrawLine(a, b, Vector4(0, 1, 0, 1));
     }
 
-    testGrid->DebugDrawGrid();
+    //testGrid->DebugDrawGrid();
 }
 
 
@@ -108,7 +111,7 @@ int main() {
 
     //TestStateMachine();
     //TestNetworking();
-    TestPathfinding();
+    //TestPathfinding();
 
     w->ShowOSPointer(false);
     w->LockMouseToWindow(true);
@@ -129,7 +132,7 @@ int main() {
             w->ShowConsole(false);
         }
 
-        DisplayPathfinding();
+        //DisplayPathfinding();
 
         w->SetTitle("CSC8503 Game technology | FPS: " + std::to_string(1.0f / dt));
 

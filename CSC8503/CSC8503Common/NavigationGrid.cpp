@@ -36,7 +36,7 @@ NavigationGrid::NavigationGrid(const std::string& filename) : NavigationGrid() {
             char type = 0;
             infile >> type;
             n.Type = type;
-            n.Position = Vector3((float) (x * m_GridWidth), 0, (float) (y * m_GridHeight));
+            n.Position = Vector3((float)(x * m_NodeSize), 0, (float)(y * m_NodeSize));
 
             if (type == 'g') {
                 m_GoosePosition = Vector3(n.Position);
@@ -94,11 +94,11 @@ NavigationGrid::~NavigationGrid() {
 
 bool NavigationGrid::FindPath(const Vector3& from, const Vector3& to, NavigationPath& outPath) {
     // need to work out which node ’from ’ sits in , and ’to ’ sits in
-    const int fromX = (from.x / (float) m_NodeSize);
-    const int fromZ = (from.z / (float) m_NodeSize);
+    const int fromX = ((from.x + (0.5f * m_NodeSize)) / (float) m_NodeSize);
+    const int fromZ = ((from.z + (0.5f * m_NodeSize)) / (float) m_NodeSize);
 
-    const int toX = (to.x / (float) m_NodeSize);
-    const int toZ = (to.z / (float) m_NodeSize);
+    const int toX = ((to.x + (0.5f * m_NodeSize)) / (float)m_NodeSize);
+    const int toZ = ((to.z + (0.5f * m_NodeSize)) / (float) m_NodeSize);
 
     if (fromX < 0 || fromX > m_GridWidth - 1 ||
         fromZ < 0 || fromZ > m_GridHeight - 1) {
@@ -176,10 +176,12 @@ void NavigationGrid::DebugDrawGrid() {
         for (int x = 0; x < m_GridWidth; ++x) {
             GridNode& n = m_AllNodes[(m_GridWidth * y) + x];
 
+            Vector3 pos = n.Position;
+            pos.y = 5.0f;
             if (n.Type == 'x') {
-                Debug::DrawCube(n.Position, 5.0f, Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+                Debug::DrawCube(pos, 5.0f, Vector4(1.0f, 0.0f, 0.0f, 1.0f));
             } else {
-                Debug::DrawCube(n.Position, 2.0f, Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+                Debug::DrawCube(pos, 2.0f, Vector4(1.0f, 1.0f, 0.0f, 1.0f));
             }
         }
     }

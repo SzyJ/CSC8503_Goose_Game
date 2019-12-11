@@ -30,6 +30,9 @@ namespace NCL {
                 return true;
             }
 
+            void GetLast() {
+                
+            }
         protected:
             std::vector<Vector3> m_Waypoints;
         };
