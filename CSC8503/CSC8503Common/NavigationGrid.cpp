@@ -78,6 +78,9 @@ NavigationGrid::NavigationGrid(const std::string& filename) : NavigationGrid() {
                         n.Connected[i]->Type == 'a') {
                         n.Costs[i] = 1;
                     }
+                    if (n.Connected[i]->Type == ',') {
+                        n.Costs[i] = 8;
+                    }
                     if (n.Connected[i]->Type == 'x') {
                         n.Connected[i] = nullptr; //actually a wall, disconnect!
                     }

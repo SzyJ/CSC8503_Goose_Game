@@ -105,6 +105,12 @@ namespace NCL {
                     const Vector3 slowdownFactor(hSlowdown, vSlowdown, hSlowdown);
                     const Vector3 currentForce = otherObject->GetPhysicsObject()->GetForce();
                     otherObject->GetPhysicsObject()->AddForce(-currentForce * slowdownFactor);
+
+                    if (otherObject->GetName() == "Keeper") {
+                        Vector3 swimDir(0.0f, 1.0f, 0.0f);
+
+                        otherObject->GetPhysicsObject()->AddForce(swimDir * 50.0f);
+                    }
                 }
             }
 

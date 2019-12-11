@@ -186,8 +186,6 @@ void TutorialGame::UpdateKeeperForces() {
         keeperPos.x - tolerence < m_NextWaypoint.x &&
         keeperPos.z + tolerence > m_NextWaypoint.z &&
         keeperPos.z - tolerence < m_NextWaypoint.z) {
-    
-        std::cout << "Calulating Path!"<< std::endl;
 
         // Checkpoint reached: recalculate path
 
@@ -214,7 +212,6 @@ void TutorialGame::UpdateKeeperForces() {
         //
         //    lastWP = thisWP;
         //}
-
     }
 
     //m_GameState->GetNavigationGrid()->DebugDrawGrid();
@@ -224,6 +221,15 @@ void TutorialGame::UpdateKeeperForces() {
     dir.Normalise();
 
     m_Keeper->GetPhysicsObject()->AddForce(dir * 100.0f);
+    
+    float targetAngle = atan2(dir.x, dir.z);
+
+    Quaternion targetOrientation;
+    targetOrientation.x = 0.0f;
+    targetOrientation.y = sin(targetAngle * 0.5f);
+    targetOrientation.z = 0.0f;
+    targetOrientation.w = cos(targetAngle * 0.5f);
+    m_Keeper->GetTransform().SetLocalOrientation(targetOrientation);
 }
 
 void TutorialGame::UpdateGooseOrientation() {
@@ -586,7 +592,8 @@ GameObject* TutorialGame::AddParkKeeperToWorld(const Vector3& position) {
 
     GameObject* keeper = new GameObject("Keeper");
 
-    AABBVolume* volume = new AABBVolume(Vector3(0.3f, 0.9f, 0.3f) * meshSize);
+    //auto* volume = new AABBVolume(Vector3(0.3f, 0.9f, 0.3f) * meshSize);
+    auto* volume = new SphereVolume(meshSize);
     keeper->SetBoundingVolume((CollisionVolume*) volume);
 
     keeper->GetTransform().SetWorldScale(Vector3(meshSize, meshSize, meshSize));
