@@ -74,6 +74,14 @@ namespace NCL {
 		//Sets position in world space
 		void	SetPosition(const Vector3& val) { position = val; }
 
+	    //Gets roll, in degrees
+        float	GetRoll()   const { return roll; }
+        //Sets roll, in degrees
+        void	SetRoll(float r) {
+            roll = r;
+            UpdateCameraVectors();
+        }
+
 		//Gets yaw, in degrees
 		float	GetYaw()   const { return yaw; }
 		//Sets yaw, in degrees
@@ -107,6 +115,7 @@ namespace NCL {
 		float	fov;
 		float	yaw;
 		float	pitch;
+		float	roll;
 
 		Vector3 position;
 

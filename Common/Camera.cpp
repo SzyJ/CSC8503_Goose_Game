@@ -38,6 +38,7 @@ Matrix4 Camera::BuildViewMatrix() const {
 	//using the negative values ;). The matrix multiplication order is important!
 	return	Matrix4::Rotation(-pitch, Vector3(1, 0, 0)) *
 		Matrix4::Rotation(-yaw, Vector3(0, 1, 0)) *
+		Matrix4::Rotation(-roll, Vector3(0, 0, 1)) *
 		Matrix4::Translation(-position);
 };
 
@@ -56,6 +57,7 @@ Camera Camera::BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw
 	c.position	= pos;
 	c.pitch		= pitch;
 	c.yaw		= yaw;
+    c.roll = 0.0f;
 	c.nearPlane = nearPlane;
 	c.farPlane  = farPlane;
 
@@ -69,6 +71,7 @@ Camera Camera::BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, floa
 	c.position	= pos;
 	c.pitch		= pitch;
 	c.yaw		= yaw;
+    c.roll = 0.0f;
 	c.nearPlane = nearPlane;
 	c.farPlane	= farPlane;
 

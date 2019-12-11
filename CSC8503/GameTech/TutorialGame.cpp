@@ -101,7 +101,7 @@ void TutorialGame::UpdateGame(float dt) {
 }
 
 void TutorialGame::UpdateAppleForces() {
-    for (uint16_t index = 0; index < m_AppleChain.size(); ++index) {
+    for (size_t index = 0; index < m_AppleChain.size(); ++index) {
         Vector3 targetPosition;
 
         GameObject* thisApple = m_AppleChain.at(index);
@@ -134,7 +134,7 @@ void TutorialGame::UpdateObjectGravity() {
     std::vector<GameObject*>::const_iterator last;
     m_World->GetObjectIterators(first, last);
 
-    const float mapSize = static_cast<float>(m_GameState->GetMapWidth() * m_GameState->GetNodeSize());
+    const float mapSize = static_cast<float>((m_GameState->GetMapWidth() + 0.5f) * m_GameState->GetNodeSize());
 
     for (auto obj = first; obj < last; ++obj) {
         auto trans = (*obj)->GetTransform();
@@ -152,8 +152,7 @@ void TutorialGame::UpdateObjectGravity() {
         if (trans.GetWorldPosition().z < 0.0f) {
             objGravDir.z = 1.0f;
             gravCalculated = true;
-        }
-        else if (trans.GetWorldPosition().z > mapSize) {
+        } else if (trans.GetWorldPosition().z > mapSize) {
             objGravDir.z = -1.0f;
             gravCalculated = true;
         }
@@ -161,8 +160,7 @@ void TutorialGame::UpdateObjectGravity() {
         if (!gravCalculated) {
             if (trans.GetWorldPosition().y >= 0.0f) {
                 objGravDir.y = -1.0f;
-            }
-            else {
+            } else {
                 objGravDir.y = 1.0f;
             }
         }
@@ -287,6 +285,7 @@ void TutorialGame::MoveGoose() {
 void TutorialGame::UpdateCamPosition() {
     const float maxCamDist = 15.0f;
 
+
     Vector3 facingDir = m_World->GetMainCamera()->GetPointingDirection();
     Vector3 camPosOffset = m_Goose->GetTransform().GetWorldPosition();
 
@@ -296,6 +295,19 @@ void TutorialGame::UpdateCamPosition() {
     camPosOffset -= facingDir * maxCamDist;
 
     m_World->GetMainCamera()->SetPosition(camPosOffset);
+
+    //Vector3 goosePos = m_Goose->GetTransform().GetWorldPosition();
+    //const float mapSize = static_cast<float>((m_GameState->GetMapWidth() * 0.5f) * m_GameState->GetNodeSize());
+    //if (goosePos.x < 0 || goosePos.z < 0) {
+    //    m_World->GetMainCamera()->SetRoll(-90.0f);
+    //} else if (goosePos.x > mapSize || goosePos.z < mapSize) {
+    //    m_World->GetMainCamera()->SetRoll(90.0f);
+    //} else if (goosePos.y > 0.0f) {
+    //    m_World->GetMainCamera()->SetRoll(0.0f);
+    //} else {
+    //    m_World->GetMainCamera()->SetRoll(180.0f);
+    //
+    //}
 }
 
 /*
