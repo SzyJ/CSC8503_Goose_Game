@@ -188,7 +188,6 @@ void TutorialGame::UpdateKeeperForces() {
         keeperPos.z - tolerence < m_NextWaypoint.z) {
 
         // Checkpoint reached: recalculate path
-
         NavigationPath path;
         bool found = m_GameState->GetNavigationGrid()->FindPath(keeperPos, m_Goose->GetConstTransform().GetWorldPosition(), path);
 
@@ -203,18 +202,23 @@ void TutorialGame::UpdateKeeperForces() {
         path.PopWaypoint(lastWP);
 
         m_NextWaypoint = lastWP;
-        
-        //while(path.PopWaypoint(thisWP)) {
-        //    thisWP.y = 11.0f;
-        //    lastWP.y = 11.0f;
-        //
-        //    Debug::DrawLine(lastWP, thisWP, Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-        //
-        //    lastWP = thisWP;
-        //}
+
+        if (m_InSelectionMode) {
+            while(path.PopWaypoint(thisWP)) {
+                thisWP.y = 11.0f;
+                lastWP.y = 11.0f;
+            
+                Debug::DrawLine(lastWP, thisWP, Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+            
+                lastWP = thisWP;
+            }            
+        }
+
     }
 
-    //m_GameState->GetNavigationGrid()->DebugDrawGrid();
+    if (m_InSelectionMode) {
+        m_GameState->GetNavigationGrid()->DebugDrawGrid();
+    }
 
     Vector3 dir((m_NextWaypoint - keeperPos));
     dir.y = 0.0f;

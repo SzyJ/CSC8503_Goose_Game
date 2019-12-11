@@ -79,7 +79,7 @@ NavigationGrid::NavigationGrid(const std::string& filename) : NavigationGrid() {
                         n.Costs[i] = 1;
                     }
                     if (n.Connected[i]->Type == ',') {
-                        n.Costs[i] = 8;
+                        n.Costs[i] = 15;
                     }
                     if (n.Connected[i]->Type == 'x') {
                         n.Connected[i] = nullptr; //actually a wall, disconnect!
