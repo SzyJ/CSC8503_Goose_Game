@@ -81,6 +81,8 @@ void TutorialGame::UpdateGame(float dt) {
         Debug::Print("(G)ravity off", Vector2(10, 40));
     }
 
+    UpdateObjectGravity();
+
     SelectObject();
     if (m_InSelectionMode) {
         MoveSelectedObject();
@@ -124,6 +126,49 @@ void TutorialGame::UpdateAppleForces() {
         const float forceStrength = (15.0f * 5.0f) - (5.0f * 1.0f);
 
         thisApple->GetPhysicsObject()->AddForce(targetPosition * forceStrength);
+    }
+}
+
+void TutorialGame::UpdateObjectGravity() {
+    std::vector<GameObject*>::const_iterator first;
+    std::vector<GameObject*>::const_iterator last;
+    m_World->GetObjectIterators(first, last);
+
+    const float mapSize = static_cast<float>(m_GameState->GetMapWidth() * m_GameState->GetNodeSize());
+
+    for (auto obj = first; obj < last; ++obj) {
+        auto trans = (*obj)->GetTransform();
+
+        bool gravCalculated = false;
+        Vector3 objGravDir(0.0f, 0.0f, 0.0f);
+        if (trans.GetWorldPosition().x < 0.0f) {
+            objGravDir.x = 1.0f;
+            gravCalculated = true;
+        } else if (trans.GetWorldPosition().x > mapSize) {
+            objGravDir.x = -1.0f;
+            gravCalculated = true;
+        }
+
+        if (trans.GetWorldPosition().z < 0.0f) {
+            objGravDir.z = 1.0f;
+            gravCalculated = true;
+        }
+        else if (trans.GetWorldPosition().z > mapSize) {
+            objGravDir.z = -1.0f;
+            gravCalculated = true;
+        }
+
+        if (!gravCalculated) {
+            if (trans.GetWorldPosition().y >= 0.0f) {
+                objGravDir.y = -1.0f;
+            }
+            else {
+                objGravDir.y = 1.0f;
+            }
+        }
+        objGravDir.Normalise();
+
+        (*obj)->GetPhysicsObject()->SetGravityDirection(objGravDir);
     }
 }
 
@@ -208,7 +253,7 @@ void TutorialGame::MoveGoose() {
     //so we can take a guess, and use the cross of straight up, and
     //the right axis, to hopefully get a vector that's good enough!
 
-    Vector3 fwdAxis = Vector3::Cross(Vector3(0, 1, 0), rightAxis);
+    Vector3 fwdAxis = Vector3::Cross(-m_Goose->GetPhysicsObject()->GetGravityDirection(), rightAxis);
 
     const float moveForce = 100.0f;
 
@@ -234,7 +279,7 @@ void TutorialGame::MoveGoose() {
 
     if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE)) {
         m_Goose->SetSleep(false);
-        m_Goose->GetPhysicsObject()->AddForce(Vector3(0.0f, 1.0f, 0.0f) * moveForce);
+        m_Goose->GetPhysicsObject()->AddForce(-m_Goose->GetPhysicsObject()->GetGravityDirection() * moveForce);
     }
 
 }

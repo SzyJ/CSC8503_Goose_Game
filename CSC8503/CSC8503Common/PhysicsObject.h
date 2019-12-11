@@ -106,6 +106,9 @@ namespace NCL {
                 return m_InverseInteriaTensor;
             }
 
+            Vector3 GetGravityDirection() { return m_GravityDirection; }
+            void SetGravityDirection(const Vector3& newGravDir) { m_GravityDirection = newGravDir; }
+
         protected:
             const CollisionVolume* m_Volume;
             Transform* m_Transform = nullptr;
@@ -122,6 +125,8 @@ namespace NCL {
             Vector3 m_Torque;
             Vector3 m_InverseInertia;
             Matrix3 m_InverseInteriaTensor;
+
+            Vector3 m_GravityDirection;
 
             std::deque<Vector3> m_PositionDeltaQueue;
             bool m_IsSleeping = m_InverseMass == 0.0f;
