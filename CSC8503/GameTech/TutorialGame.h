@@ -2,6 +2,7 @@
 
 #include "GameTechRenderer.h"
 #include "../CSC8503Common/PhysicsSystem.h"
+#include "GameLoader.h"
 
 namespace NCL {
     namespace CSC8503 {
@@ -51,6 +52,10 @@ namespace NCL {
             GameObject* AddAppleToWorld(const Vector3& position);
 
             GameObject* AddWaterTile(const Vector3& position, const Vector3& size);
+            void AddWorldTiles();
+
+
+            GameState* m_GameState;
 
             std::vector<GameObject*> m_AppleChain;
             GameObject* m_Goose;

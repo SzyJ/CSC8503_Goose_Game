@@ -39,6 +39,10 @@ namespace NCL {
 
             void DebugDrawGrid();
 
+            Vector3 GetGoosePosition() { return m_GoosePosition; }
+            Vector3 GetKeeperPosition() { return m_KeeperPosition; }
+            std::vector<Vector3> GetApplePositions() { return m_ApplePositions; }
+
         protected:
             bool NodeInList(GridNode* n, std::vector<GridNode*>& list) const;
             GridNode* RemoveBestNode(std::vector<GridNode*>& list) const;
@@ -48,6 +52,10 @@ namespace NCL {
             int m_GridWidth;
             int m_GridHeight;
             GridNode* m_AllNodes;
+
+            Vector3 m_GoosePosition;
+            Vector3 m_KeeperPosition;
+            std::vector<Vector3> m_ApplePositions;
         };
 
     }

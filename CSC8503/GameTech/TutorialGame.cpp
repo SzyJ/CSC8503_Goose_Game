@@ -20,6 +20,8 @@ TutorialGame::TutorialGame() {
     m_UseGravity = false;
     m_InSelectionMode = false;
 
+    m_GameState = new GameState("main");
+
     Debug::SetRenderer(m_Renderer);
 
     InitialiseAssets();
@@ -320,20 +322,59 @@ void TutorialGame::InitWorld() {
     m_Physics->Clear();
 
     InitMixedGridWorld(10, 10, 3.5f, 3.5f);
-    m_Goose = AddGooseToWorld(Vector3(30, 2, 0));
 
-    m_AppleChain.push_back(AddAppleToWorld(Vector3(35, 2, 0)));
-    m_AppleChain.push_back(AddAppleToWorld(Vector3(35, 2, 0)));
+    const float spawnOffset = 15.0f;
 
-    m_Keeper = AddParkKeeperToWorld(Vector3(40, 5, 0));
-    AddCharacterToWorld(Vector3(45, 5, 0));
+    Vector3 goosePos = m_GameState->GetNavigationGrid()->GetGoosePosition();
+    goosePos.y += m_GameState->HeightAt(goosePos.x, goosePos.z) * 1.0f;
+    goosePos.y += spawnOffset;
+    m_Goose = AddGooseToWorld(goosePos);
 
-    AddWaterTile(Vector3(10.f, 10.0f, -10.0f), Vector3(5.0f, 5.0f, 5.0f));
+    for (auto position : m_GameState->GetNavigationGrid()->GetApplePositions()) {
+        position.y += m_GameState->HeightAt(position.x, position.z) * 1.0f;
+        position.y += spawnOffset;
+        m_AppleChain.push_back(AddAppleToWorld(position));
+    }
 
-    AddFloorToWorld(Vector3(0, -2, 0));
+    Vector3 keeperPos = m_GameState->GetNavigationGrid()->GetKeeperPosition();
+    keeperPos.y += m_GameState->HeightAt(keeperPos.x, keeperPos.z) * 1.0f;
+    keeperPos.y += spawnOffset;
+    m_Keeper = AddParkKeeperToWorld(keeperPos);
+    //AddCharacterToWorld();
+
+    //AddWaterTile(Vector3(10.f, 10.0f, -10.0f), Vector3(5.0f, 5.0f, 5.0f));
+
+    AddWorldTiles();
+
+    //AddFloorToWorld(Vector3(0, -2, 0));
 }
 
 //From here on it's functions to add in objects to the world!
+
+void TutorialGame::AddWorldTiles() {
+    unsigned int xTileCount = m_GameState->GetMapWidth();
+    unsigned int yTileCount = m_GameState->GetMapHeight();
+    unsigned int tileSize = m_GameState->GetNodeSize();
+
+    const float baseHeight = 5.0f;
+    const float heightScale = 0.5f;
+
+    for (unsigned int y = 0; y < yTileCount; ++y) {
+
+        for (unsigned int x = 0; x < xTileCount; ++x) {
+            float xPos = static_cast<float>(x * tileSize);
+            float yPos = static_cast<float>(y * tileSize);
+
+            Vector3 position(xPos, 0.0f, yPos);
+            if (m_GameState->GetMapTiles()[(y * xTileCount) + x] == MapTile::Ground) {
+                AddCubeToWorld(position, Vector3(static_cast<float>(tileSize) * 0.5f, (m_GameState->HeightAt(xPos, yPos) * heightScale) + baseHeight, static_cast<float>(tileSize) * 0.5f), 0.0f);
+            } else {
+                AddWaterTile(position, Vector3(static_cast<float>(tileSize) * 0.5f, (m_GameState->HeightAt(xPos, yPos) * heightScale) + baseHeight, static_cast<float>(tileSize) * 0.5f));
+            }
+        }
+
+    }
+}
 
 /*
 

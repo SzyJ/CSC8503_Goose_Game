@@ -37,6 +37,14 @@ NavigationGrid::NavigationGrid(const std::string& filename) : NavigationGrid() {
             infile >> type;
             n.Type = type;
             n.Position = Vector3((float) (x * m_GridWidth), 0, (float) (y * m_GridHeight));
+
+            if (type == 'g') {
+                m_GoosePosition = Vector3(n.Position);
+            } else if (type == 'k') {
+                m_KeeperPosition = Vector3(n.Position);
+            } else if (type == 'a') {
+                m_ApplePositions.emplace_back(n.Position);
+            }
         }
     }
 
@@ -63,12 +71,17 @@ NavigationGrid::NavigationGrid(const std::string& filename) : NavigationGrid() {
             }
             for (int i = 0; i < 4; ++i) {
                 if (n.Connected[i]) {
-                    if (n.Connected[i]->Type == '.') {
+
+                    if (n.Connected[i]->Type == '.' ||
+                        n.Connected[i]->Type == 'g' ||
+                        n.Connected[i]->Type == 'k' ||
+                        n.Connected[i]->Type == 'a') {
                         n.Costs[i] = 1;
                     }
                     if (n.Connected[i]->Type == 'x') {
                         n.Connected[i] = nullptr; //actually a wall, disconnect!
                     }
+                    
                 }
             }
         }
