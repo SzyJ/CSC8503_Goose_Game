@@ -119,7 +119,7 @@ void TutorialGame::UpdateAppleForces() {
             targetPosition = direction.Normalised() * objDistance;
         }
 
-        float forceStrength = (15.0f * 5.0f) - (5.0f * 1.0f);
+        const float forceStrength = (15.0f * 5.0f) - (5.0f * 1.0f);
 
         thisApple->GetPhysicsObject()->AddForce(targetPosition * forceStrength);
     }

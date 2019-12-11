@@ -90,16 +90,21 @@ namespace NCL {
 
             virtual void OnCollisionBegin(GameObject* otherObject) {
                 //std::cout << "OnCollisionBegin event occured!\n";
-
                 if (m_Name == "Water") {
                     Vector3 otherPosition = otherObject->GetConstTransform().GetWorldPosition();
 
                     const float heightDelta = otherPosition.y - m_Transform.GetWorldPosition().y;
 
-                    const float floatOffset = m_Transform.GetLocalScale().y + 0.9f;
+                    const float floatOffset = m_Transform.GetLocalScale().y + 1.0f;
 
                     const float forceStrength = (10.0f * 5.0f) - (5.0f * 1.0f);
                     otherObject->GetPhysicsObject()->AddForce(Vector3(0.0f, heightDelta - floatOffset, 0.0f) * -forceStrength);
+
+                    const float hSlowdown = 0.1f;
+                    const float vSlowdown = 0.0f;
+                    const Vector3 slowdownFactor(hSlowdown, vSlowdown, hSlowdown);
+                    const Vector3 currentForce = otherObject->GetPhysicsObject()->GetForce();
+                    otherObject->GetPhysicsObject()->AddForce(-currentForce * slowdownFactor);
                 }
             }
 
