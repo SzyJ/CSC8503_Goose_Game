@@ -483,7 +483,8 @@ void TutorialGame::AddWorldTiles() {
 
             Vector3 position(xPos, 0.0f, yPos);
             if (m_GameState->GetMapTiles()[(y * xTileCount) + x] == MapTile::Ground) {
-                AddCubeToWorld(position, Vector3(static_cast<float>(tileSize) * 0.5f, (m_GameState->HeightAt(xPos, yPos) * heightScale) + baseHeight, static_cast<float>(tileSize) * 0.5f), 0.0f);
+                auto cube = AddCubeToWorld(position, Vector3(static_cast<float>(tileSize) * 0.5f, (m_GameState->HeightAt(xPos, yPos) * heightScale) + baseHeight, static_cast<float>(tileSize) * 0.5f), 0.0f);
+                cube->GetRenderObject()->SetColour(Vector4(0.3f, 0.37f, 0.15f, 1.0f));
             } else {
                 AddWaterTile(position, Vector3(static_cast<float>(tileSize) * 0.5f, (m_GameState->HeightAt(xPos, yPos) * heightScale) + baseHeight, static_cast<float>(tileSize) * 0.5f));
             }
