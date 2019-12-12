@@ -10,6 +10,7 @@ namespace NCL {
     namespace CSC8503 {
 
         class GameObject;
+
         class NetworkState {
         public:
             NetworkState()

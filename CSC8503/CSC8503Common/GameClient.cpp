@@ -23,10 +23,10 @@ bool GameClient::Connect(uint8_t a, uint8_t b, uint8_t c, uint8_t d, int portNum
 
     m_NetPeer = enet_host_connect(m_NetHandle, &address, 2, 0);
 
-    if (m_NetPeer != nullptr) {
+    //if (m_NetPeer != nullptr) {
         //threadAlive = true;
         //updateThread = std::thread(&GameClient::ThreadedUpdate, this);
-    }
+    //}
 
     return m_NetPeer != nullptr;
 }
@@ -52,7 +52,7 @@ void GameClient::UpdateClient() {
 void GameClient::SendPacket(GamePacket& payload) {
     ENetPacket* dataPacket = enet_packet_create(&payload, payload.GetTotalSize(), 0);
 
-    int test = enet_peer_send(m_NetPeer, 0, dataPacket);
+    enet_peer_send(m_NetPeer, 0, dataPacket);
 }
 
 //void GameClient::ThreadedUpdate() {

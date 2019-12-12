@@ -17,13 +17,13 @@ namespace NCL {
         };
 
         struct DeltaPacket : public GamePacket {
-            int fullID = -1;
+            int FullID = -1;
 
-            int objectID = -1;
+            int ObjectID = -1;
 
-            char pos[3];
+            char Pos[3];
 
-            char orientation[4];
+            char Orientation[4];
 
             DeltaPacket() {
                 Type = Delta_State;
@@ -34,7 +34,7 @@ namespace NCL {
         struct ClientPacket : public GamePacket {
             int LastID;
 
-            char Buttonstates[8];
+            char ButtonStates[8];
 
             ClientPacket() {
                 Size = sizeof(ClientPacket);

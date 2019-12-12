@@ -665,6 +665,7 @@ GameObject* TutorialGame::AddAppleToWorld(const Vector3& position) {
     apple->GetPhysicsObject()->SetInverseMass(1.0f);
     apple->GetPhysicsObject()->InitSphereInertia();
 
+    apple->GetRenderObject()->SetColour(Vector4(0.4, 0.07, 0.03, 1.0f));
     m_World->AddGameObject(apple);
 
     return apple;

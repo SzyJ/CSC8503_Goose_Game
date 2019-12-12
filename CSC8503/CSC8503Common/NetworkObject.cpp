@@ -24,24 +24,24 @@ bool NetworkObject::WritePacket(GamePacket** p, bool deltaFrame, int stateID) {
 
 //Client objects recieve these packets
 bool NetworkObject::ReadDeltaPacket(DeltaPacket& p) {
-    if (p.fullID != m_LastFullState.m_StateID) {
+    if (p.FullID != m_LastFullState.m_StateID) {
         m_DeltaErrors++; //can't delta this frame
         return false;
     }
 
-    UpdateStateHistory(p.fullID);
+    UpdateStateHistory(p.FullID);
 
     Vector3 fullPos = m_LastFullState.m_Position;
     Quaternion fullOrientation = m_LastFullState.m_Orientation;
 
-    fullPos.x += p.pos[0];
-    fullPos.y += p.pos[1];
-    fullPos.z += p.pos[2];
+    fullPos.x += p.Pos[0];
+    fullPos.y += p.Pos[1];
+    fullPos.z += p.Pos[2];
 
-    fullOrientation.x += ((float) p.orientation[0]) / 127.0f;
-    fullOrientation.y += ((float) p.orientation[1]) / 127.0f;
-    fullOrientation.z += ((float) p.orientation[2]) / 127.0f;
-    fullOrientation.w += ((float) p.orientation[3]) / 127.0f;
+    fullOrientation.x += ((float) p.Orientation[0]) / 127.0f;
+    fullOrientation.y += ((float) p.Orientation[1]) / 127.0f;
+    fullOrientation.z += ((float) p.Orientation[2]) / 127.0f;
+    fullOrientation.w += ((float) p.Orientation[3]) / 127.0f;
 
     m_Object.GetTransform().SetWorldPosition(fullPos);
     m_Object.GetTransform().SetLocalOrientation(fullOrientation);
@@ -64,16 +64,15 @@ bool NetworkObject::ReadFullPacket(FullPacket& p) {
 }
 
 bool NetworkObject::WriteDeltaPacket(GamePacket** p, int stateID) {
-    DeltaPacket* dp = new DeltaPacket();
-
-    dp->objectID = m_NetworkID;
-
     NetworkState state;
     if (!GetNetworkState(stateID, state)) {
         return false; //can't delta!
     }
 
-    dp->fullID = stateID;
+    DeltaPacket* dp = new DeltaPacket();
+
+    dp->ObjectID = m_NetworkID;    
+    dp->FullID = stateID;
 
     Vector3 currentPos = m_Object.GetTransform().GetWorldPosition();
     Quaternion currentOrientation = m_Object.GetTransform().GetWorldOrientation();
@@ -81,21 +80,21 @@ bool NetworkObject::WriteDeltaPacket(GamePacket** p, int stateID) {
     currentPos -= state.m_Position;
     currentOrientation -= state.m_Orientation;
 
-    dp->pos[0] = (char) currentPos.x;
-    dp->pos[1] = (char) currentPos.y;
-    dp->pos[2] = (char) currentPos.z;
+    dp->Pos[0] = (char) currentPos.x;
+    dp->Pos[1] = (char) currentPos.y;
+    dp->Pos[2] = (char) currentPos.z;
 
-    dp->orientation[0] = (char) (currentOrientation.x * 127.0f);
-    dp->orientation[1] = (char) (currentOrientation.y * 127.0f);
-    dp->orientation[2] = (char) (currentOrientation.z * 127.0f);
-    dp->orientation[3] = (char) (currentOrientation.w * 127.0f);
+    dp->Orientation[0] = (char) (currentOrientation.x * 127.0f);
+    dp->Orientation[1] = (char) (currentOrientation.y * 127.0f);
+    dp->Orientation[2] = (char) (currentOrientation.z * 127.0f);
+    dp->Orientation[3] = (char) (currentOrientation.w * 127.0f);
 
     *p = dp;
     return true;
 }
 
 bool NetworkObject::WriteFullPacket(GamePacket** p) {
-    FullPacket* fp = new FullPacket();
+    auto* fp = new FullPacket();
 
     fp->ObjectID = m_NetworkID;
     fp->FullState.m_Position = m_Object.GetTransform().GetWorldPosition();
