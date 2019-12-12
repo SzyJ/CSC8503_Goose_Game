@@ -141,31 +141,26 @@ void TutorialGame::UpdateObjectGravity() {
     for (auto obj = first; obj < last; ++obj) {
         auto trans = (*obj)->GetTransform();
 
-        bool gravCalculated = false;
         Vector3 objGravDir(0.0f, 0.0f, 0.0f);
+
         if (trans.GetWorldPosition().x < -0.5f * m_GameState->GetNodeSize()) {
             objGravDir.x = 1.0f;
-            gravCalculated = true;
         } else if (trans.GetWorldPosition().x > mapSize) {
             objGravDir.x = -1.0f;
-            gravCalculated = true;
         }
 
         if (trans.GetWorldPosition().z < -0.5f * m_GameState->GetNodeSize()) {
             objGravDir.z = 1.0f;
-            gravCalculated = true;
         } else if (trans.GetWorldPosition().z > mapSize) {
             objGravDir.z = -1.0f;
-            gravCalculated = true;
         }
 
-        if (!gravCalculated) {
-            if (trans.GetWorldPosition().y >= 0.0f) {
-                objGravDir.y = -1.0f;
-            } else {
-                objGravDir.y = 1.0f;
-            }
+        if (trans.GetWorldPosition().y >= 0.0f) {
+            objGravDir.y = -1.0f;
+        } else {
+            objGravDir.y = 1.0f;
         }
+        
         objGravDir.Normalise();
 
         (*obj)->GetPhysicsObject()->SetGravityDirection(objGravDir);
