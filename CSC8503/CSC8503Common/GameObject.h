@@ -84,6 +84,10 @@ namespace NCL {
                 m_PhysicsObject = newObject;
             }
 
+            void SetNetworkObject(NetworkObject* newObject) {
+                m_NetworkObject = newObject;
+            }
+
             const string& GetName() const {
                 return m_Name;
             }
@@ -100,11 +104,11 @@ namespace NCL {
                     const float forceStrength = (10.0f * 5.0f) - (5.0f * 1.0f);
                     otherObject->GetPhysicsObject()->AddForce(Vector3(0.0f, heightDelta - floatOffset, 0.0f) * -forceStrength);
 
-                    const float hSlowdown = 0.1f;
+                    const float hSlowdown = 0.9f;
                     const float vSlowdown = 0.0f;
                     const Vector3 slowdownFactor(hSlowdown, vSlowdown, hSlowdown);
                     const Vector3 currentForce = otherObject->GetPhysicsObject()->GetForce();
-                    otherObject->GetPhysicsObject()->AddForce(-currentForce * slowdownFactor);
+                    otherObject->GetPhysicsObject()->AddForce(currentForce * -slowdownFactor);
 
                     if (otherObject->GetName() == "Keeper") {
                         Vector3 swimDir(0.0f, 1.0f, 0.0f);

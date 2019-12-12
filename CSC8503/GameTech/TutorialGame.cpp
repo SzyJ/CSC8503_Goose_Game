@@ -651,7 +651,7 @@ GameObject* TutorialGame::AddAppleToWorld(const Vector3& position) {
 
     SphereVolume* volume = new SphereVolume(0.7f);
     apple->SetBoundingVolume((CollisionVolume*) volume);
-    apple->GetTransform().SetWorldScale(Vector3(4, 4, 4));
+    apple->GetTransform().SetWorldScale(Vector3(2.0f,2.0f,2.0f));
     apple->GetTransform().SetWorldPosition(position);
 
     apple->SetRenderObject(new RenderObject(&apple->GetTransform(), m_AppleMesh, nullptr, m_BasicShader));

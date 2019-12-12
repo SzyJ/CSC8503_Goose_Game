@@ -79,8 +79,8 @@ void TestNetworking() {
 
     int port = NetworkBase::GetDefaultPort();
 
-    GameServer * server = new GameServer(port, 1);
-    GameClient * client = new GameClient();
+    GameServer* server = new GameServer(port, 1);
+    GameClient* client = new GameClient();
 
     server->RegisterPacketHandler(String_Message, &serverReceiver);
     client->RegisterPacketHandler(String_Message, &clientReceiver);
@@ -163,7 +163,9 @@ int main() {
     w->ShowOSPointer(false);
     w->LockMouseToWindow(true);
 
-    SoloHonk(w);
+    //TestNetworking();
+
+    MultiHonk(w);
 }
 
 void SoloHonk(Window* w) {
@@ -192,8 +194,10 @@ void SoloHonk(Window* w) {
 }
 
 void MultiHonk(Window* w) {
-    TutorialGame* g;
+    NetworkedGame* g;
     g = new NetworkedGame();
+
+    g->StartAsServer();
 
     while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::END)) {
         float dt = w->GetTimer()->GetTimeDeltaSeconds();

@@ -20,10 +20,13 @@ namespace NCL {
 
             void UpdateClient();
 
+            int GetID() { return m_ThisID; }
+
         protected:
             //void ThreadedUpdate();
 
-            ENetPeer* m_NetPeer = nullptr;
+            ENetPeer* m_ServerPeer = nullptr;
+            int m_ThisID = -1;
             //std::atomic<bool> threadAlive;
             //std::thread updateThread;
         };
