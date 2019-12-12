@@ -165,7 +165,7 @@ int main() {
 
     //TestNetworking();
 
-    MultiHonk(w);
+    SoloHonk(w);
 }
 
 void SoloHonk(Window* w) {

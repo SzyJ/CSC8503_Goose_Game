@@ -50,7 +50,6 @@ bool NetworkedGame::StartAsServer() {
 
     bool connectSuccess = m_ThisClient->Connect(127, 0, 0, 1, port);
 
-
     int thisID;
     while((thisID = m_ThisClient->GetID()) < 0) {
         m_ThisServer->UpdateServer();

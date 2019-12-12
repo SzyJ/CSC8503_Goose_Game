@@ -150,6 +150,7 @@
   <ItemGroup>
     <ClInclude Include="GameLoader.h" />
     <ClInclude Include="GameTechRenderer.h" />
+    <ClInclude Include="Pushdown.h" />
     <ClInclude Include="NetworkedGame.h" />
     <ClInclude Include="NetworkPlayer.h" />
     <ClInclude Include="TutorialGame.h" />
