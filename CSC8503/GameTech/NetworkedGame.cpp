@@ -5,6 +5,38 @@
 
 #define COLLISION_MSG 30
 
+NetworkedGame::NetworkedGame() {
+    TutorialGame();
+}
+
+NetworkedGame::~NetworkedGame() {
+    
+}
+
+void NetworkedGame::StartAsServer() {
+    
+}
+
+void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
+    
+}
+
+void NetworkedGame::SpawnPlayer() {
+    
+}
+
+void NetworkedGame::StartLevel() {
+    
+}
+
+void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
+    
+}
+
+void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
+    
+}
+
 void NetworkedGame::UpdateAsServer(float dt) {
     
 }

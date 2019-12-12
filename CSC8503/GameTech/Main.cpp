@@ -150,6 +150,9 @@ This time, we've added some extra functionality to the window class - we can
 hide or show the 
 
 */
+void SoloHonk(Window* w);
+void MultiHonk(Window* w);
+
 int main() {
     Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
 
@@ -157,14 +160,15 @@ int main() {
         return -1;
     }
 
-    //TestStateMachine();
-    TestNetworking();
-    //TestPathfinding();
-
     w->ShowOSPointer(false);
     w->LockMouseToWindow(true);
 
-    TutorialGame* g = new TutorialGame();
+    SoloHonk(w);
+}
+
+void SoloHonk(Window* w) {
+    TutorialGame* g;
+    g = new TutorialGame();
 
     while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::END)) {
         float dt = w->GetTimer()->GetTimeDeltaSeconds();
@@ -180,11 +184,35 @@ int main() {
             w->ShowConsole(false);
         }
 
-        //DisplayPathfinding();
-
-        w->SetTitle("CSC8503 Game technology | FPS: " + std::to_string(1.0f / dt));
+        w->SetTitle("Solo-Honk Goose Game | FPS: " + std::to_string(1.0f / dt));
 
         g->UpdateGame(dt);
     }
     Window::DestroyGameWindow();
 }
+
+void MultiHonk(Window* w) {
+    TutorialGame* g;
+    g = new NetworkedGame();
+
+    while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::END)) {
+        float dt = w->GetTimer()->GetTimeDeltaSeconds();
+
+        if (dt > 1.0f) {
+            std::cout << "Skipping large time delta" << std::endl;
+            continue; //must have hit a breakpoint or something to have a 1 second frame time!
+        }
+        if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PRIOR)) {
+            w->ShowConsole(true);
+        }
+        if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NEXT)) {
+            w->ShowConsole(false);
+        }
+
+        w->SetTitle("Multi-Honk Goose Game | FPS: " + std::to_string(1.0f / dt));
+
+        g->UpdateGame(dt);
+    }
+    Window::DestroyGameWindow();
+}
+
