@@ -2,7 +2,7 @@
 
 #include <stack>
 
-enum class GameState {
+enum class GameMenuState {
     Main_Menu,
     Solo_Honk,
     Host_Honk,
@@ -14,19 +14,26 @@ public:
     Pushdown() = default;
     ~Pushdown() = default;
 
-    void AddState(GameState newState) {
+    void AddState(GameMenuState newState) {
         m_MenuStack.push(newState);
         m_CurrentState = newState;
     }
 
-    GameState GetCurrentState() { return m_CurrentState; }
+    GameMenuState GetCurrentState() { return m_CurrentState; }
+
+    bool HasStates() { return !m_MenuStack.empty(); }
 
     bool PopState() {
         m_MenuStack.pop();
+        if (m_MenuStack.empty()) {
+            return false;
+        }
+
         m_CurrentState = m_MenuStack.top();
+        return true;
     }
 
 private:
-    std::stack<GameState> m_MenuStack;
-    GameState m_CurrentState;
+    std::stack<GameMenuState> m_MenuStack;
+    GameMenuState m_CurrentState;
 };

@@ -11,6 +11,7 @@
 
 #include "TutorialGame.h"
 #include "NetworkedGame.h"
+#include "Pushdown.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -32,7 +33,6 @@ public:
 protected:
     string m_Name;
 };
-
 
 void TestStateMachine() {
     StateMachine* testMachine = new StateMachine();
@@ -151,7 +151,9 @@ hide or show the
 
 */
 void SoloHonk(Window* w);
-void MultiHonk(Window* w);
+void MultiHonk(Window* w, bool host);
+
+void MainMenu(Pushdown& gameState);
 
 int main() {
     Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
@@ -163,9 +165,57 @@ int main() {
     w->ShowOSPointer(false);
     w->LockMouseToWindow(true);
 
-    //TestNetworking();
 
-    SoloHonk(w);
+    Pushdown gameState;
+    gameState.AddState(GameMenuState::Main_Menu);
+
+    while (gameState.HasStates()) {
+        if (gameState.GetCurrentState() == GameMenuState::Main_Menu) {
+            // show Menu
+        } else if (gameState.GetCurrentState() == GameMenuState::Solo_Honk) {
+            SoloHonk(w);
+            gameState.PopState();
+        } else if (gameState.GetCurrentState() == GameMenuState::Host_Honk) {
+            MultiHonk(w, true);
+            gameState.PopState();
+        } else if (gameState.GetCurrentState() == GameMenuState::Join_Honk) {
+            MultiHonk(w, false);
+            gameState.PopState();
+        }
+    }
+}
+
+void MainMenu(Pushdown& gameState) {
+    uint16_t SelectionIndex = 0;
+    bool choiceMade = false;
+
+    std::string choiceArray[4];
+
+    choiceArray[0] = "Solo Honk";
+    choiceArray[1] = "Host Honk";
+    choiceArray[2] = "Join Honk";
+    choiceArray[3] = "Quit";
+
+    while (!choiceMade) {
+
+    }
+
+    switch(SelectionIndex) {
+    case 0:
+
+        break;
+    case 1:
+
+        break;
+    case 2:
+
+        break;
+    case 3:
+
+        break;
+    }
+
+    
 }
 
 void SoloHonk(Window* w) {
@@ -193,11 +243,15 @@ void SoloHonk(Window* w) {
     Window::DestroyGameWindow();
 }
 
-void MultiHonk(Window* w) {
+void MultiHonk(Window* w, bool host) {
     NetworkedGame* g;
     g = new NetworkedGame();
 
-    g->StartAsServer();
+    if (host) {
+        g->StartAsServer();
+    } else {
+        g->StartAsClient(127,0,0,1);
+    }
 
     while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::END)) {
         float dt = w->GetTimer()->GetTimeDeltaSeconds();
