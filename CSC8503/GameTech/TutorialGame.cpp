@@ -484,6 +484,8 @@ void TutorialGame::InitWorld() {
 
     BridgeConstraintTest();
 
+    AddSlantedPlane(Vector3(50.0f, 40.0f, 0.0f), Vector3(10.0f, 3.0f, 10.0f));
+
     //AddFloorToWorld(Vector3(0, -2, 0));
 }
 
@@ -595,6 +597,34 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 
     cube->GetPhysicsObject()->SetInverseMass(inverseMass);
     cube->GetPhysicsObject()->InitCubeInertia();
+
+    m_World->AddGameObject(cube);
+
+    return cube;
+}
+
+
+GameObject* TutorialGame::AddSlantedPlane(const Vector3& position, Vector3 dimensions) {
+    GameObject* cube = new GameObject("Plane");
+
+    auto* volume = new OBBVolume(dimensions);
+
+    cube->SetBoundingVolume((CollisionVolume*)volume);
+
+    cube->GetTransform().SetWorldPosition(position);
+    cube->GetTransform().SetWorldScale(dimensions);
+
+    cube->SetRenderObject(new RenderObject(&cube->GetTransform(), m_CubeMesh, m_BasicTex, m_BasicShader));
+    cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
+
+    cube->GetPhysicsObject()->SetInverseMass(0);
+    cube->GetPhysicsObject()->InitCubeInertia();
+
+    Quaternion rotation(0.5f, 0.0f, 0.5f, 1.0f);
+    rotation.Normalise();
+
+    cube->GetTransform().SetLocalOrientation(rotation);
+
 
     m_World->AddGameObject(cube);
 

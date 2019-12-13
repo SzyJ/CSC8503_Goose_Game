@@ -62,6 +62,8 @@ namespace NCL {
             GameObject* AddWaterTile(const Vector3& position, const Vector3& size);
             void AddWorldTiles();
 
+            GameObject* AddSlantedPlane(const Vector3& position, Vector3 dimensions);
+
             GameState* m_GameState;
 
             Vector3 m_NextWaypoint;

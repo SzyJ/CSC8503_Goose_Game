@@ -168,7 +168,7 @@ int main() {
     Pushdown gameState;
     gameState.AddState(GameMenuState::Main_Menu);
 
-    while (gameState.HasStates()) {
+    while (gameState.HasStates() && w->UpdateWindow()) {
         if (gameState.GetCurrentState() == GameMenuState::Main_Menu) {
             MainMenu(w, gameState);
         } else if (gameState.GetCurrentState() == GameMenuState::Solo_Honk) {

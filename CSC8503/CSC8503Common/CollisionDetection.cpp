@@ -336,7 +336,7 @@ bool CollisionDetection::OBBSphereIntersection(
     localCubeTransform.SetWorldPosition(Vector3(0.0f, 0.0f, 0.0f));
 
     //CollisionInfo localInfo;
-    AABBSphereIntersection(localCubeVolume, localCubeTransform, volumeB, localSphereTransform, collisionInfo);
+    bool collided = AABBSphereIntersection(localCubeVolume, localCubeTransform, volumeB, localSphereTransform, collisionInfo);
 
     // Re-Add offsets to penetration and collision point
     collisionInfo.Point.Normal = aOrientation * collisionInfo.Point.Normal;
@@ -344,7 +344,7 @@ bool CollisionDetection::OBBSphereIntersection(
     collisionInfo.Point.LocalA += localPositionOffset;
     collisionInfo.Point.LocalB += localPositionOffset;
 
-    return false;
+    return collided;
 }
 
 

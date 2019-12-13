@@ -40,6 +40,7 @@ namespace NCL {
 		{
 		public:
 			friend class OGLRenderer;
+            OGLRenderer() = delete;
 			OGLRenderer(Window& w);
 			~OGLRenderer();
 

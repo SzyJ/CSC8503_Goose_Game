@@ -27,8 +27,15 @@ void NetworkedGame::UpdateGame(float dt) {
     TutorialGame::UpdateGame(dt);
 
     // TODO send local goose updates to server
-    GamePacket* goosePos;
-    m_Goose->GetNetworkObject()->WritePacket(&goosePos, false, 0);
+    //GamePacket* goosePos;
+    //m_Goose->GetNetworkObject()->WritePacket(&goosePos, false, 0);
+    //if (m_IsServer) {
+    //    m_ThisServer->SendGlobalPacket((GamePacket)*goosePos);
+    //} else {
+    //    m_ThisClient->SendPacket((GamePacket)*goosePos);
+    //}
+
+    //delete goosePos;
 }
 
 bool NetworkedGame::StartAsServer() {
@@ -36,7 +43,7 @@ bool NetworkedGame::StartAsServer() {
 
     m_IsServer = true;
 
-    m_ThisServer = new GameServer(port, 2);
+    m_ThisServer = new GameServer(port, 5);
     m_ThisServer->RegisterPacketHandler(Delta_State, this);
     m_ThisServer->RegisterPacketHandler(Full_State, this);
     m_ThisServer->RegisterPacketHandler(Player_Connected, this);
@@ -57,6 +64,10 @@ bool NetworkedGame::StartAsServer() {
     }
 
     m_LocalPlayer->SetNetworkObject(new NetworkObject(*m_LocalPlayer, thisID));
+
+    m_ServerPlayers.clear();
+
+    m_ServerPlayers.insert({ thisID, m_LocalPlayer });
 
     return connectSuccess;
 }
@@ -83,15 +94,23 @@ bool NetworkedGame::StartAsClient(char a, char b, char c, char d) {
         m_ThisClient->UpdateClient();
     }
 
+    for (int clients = 0; clients < thisID; ++clients) {
+        SpawnPlayer(clients);
+    }
+
     m_LocalPlayer->SetNetworkObject(new NetworkObject(*m_LocalPlayer, thisID));
     return connectSuccess;
 }
 
 void NetworkedGame::SpawnPlayer(int playerID) {
+    if (playerID < 0) {
+        return;
+    }
+
     GameObject* newGoose = AddGooseToWorld(m_GameState->GetNavigationGrid()->GetGoosePosition());
     newGoose->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
     newGoose->SetNetworkObject(new NetworkObject(*newGoose, playerID));
-    m_ServerPlayers.insert(std::pair<int, GameObject*>(playerID, newGoose));
+    m_ServerPlayers.insert({ playerID, newGoose });
 }
 
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
@@ -107,6 +126,10 @@ void NetworkedGame::ClientReceiver(int type, GamePacket* payload, int source) {
     case Delta_State: {
         DeltaPacket* realPacket = (DeltaPacket*)payload;
         int id = realPacket->ObjectID;
+        if (id < 0) {
+            break;
+        }
+
 
         if (id != m_ThisClientPlayerID) {
             m_ServerPlayers[id]->GetNetworkObject()->ReadPacket(*realPacket);
@@ -118,28 +141,13 @@ void NetworkedGame::ClientReceiver(int type, GamePacket* payload, int source) {
     case Full_State: {
         FullPacket* realPacket = (FullPacket*)payload;
         int id = realPacket->ObjectID;
+        if (id < 0) {
+            break;
+        }
 
         if (id != m_ThisClientPlayerID) {
             m_ServerPlayers[id]->GetNetworkObject()->ReadPacket(*realPacket);
         }
-
-        break;
-    }
-
-    case Player_Connected: {
-        NewPlayerPacket* realPacket = (NewPlayerPacket*)payload;
-        int thisID = realPacket->PlayerID;
-        if (thisID != m_ThisClient->GetID()) {
-            SpawnPlayer(realPacket->PlayerID);
-        }
-
-        break;
-    }
-
-    case Player_Disconnected: {
-        PlayerDisconnectPacket* realPacket = (PlayerDisconnectPacket*)payload;
-        delete m_ServerPlayers[realPacket->PlayerID];
-        m_ServerPlayers.erase(realPacket->PlayerID);
 
         break;
     }
