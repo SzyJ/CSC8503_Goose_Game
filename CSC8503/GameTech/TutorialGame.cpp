@@ -82,7 +82,6 @@ void TutorialGame::UpdateGame(float dt) {
         MoveSelectedObject();
     }
 
-
     UpdateGooseOrientation();
 
     UpdateKeeperForces();
@@ -171,6 +170,7 @@ void TutorialGame::UpdateKeeperForces() {
 
     // Perform pathfinding
     Vector3 keeperPos = m_Keeper->GetTransform().GetWorldPosition();
+    Vector3 goosePos = m_Goose->GetConstTransform().GetWorldPosition();
 
     const float tolerence = 1.0f;
 
@@ -181,7 +181,7 @@ void TutorialGame::UpdateKeeperForces() {
 
         // Checkpoint reached: recalculate path
         NavigationPath path;
-        bool found = m_GameState->GetNavigationGrid()->FindPath(keeperPos, m_Goose->GetConstTransform().GetWorldPosition(), path);
+        bool found = m_GameState->GetNavigationGrid()->FindPath(keeperPos, goosePos, path);
 
         if (!found) {
             return;
@@ -213,6 +213,13 @@ void TutorialGame::UpdateKeeperForces() {
     }
 
     Vector3 dir((m_NextWaypoint - keeperPos));
+
+    if ((keeperPos - goosePos).Length() < 7.0f) {
+        dir = (goosePos - keeperPos);
+    }
+
+    m_Renderer->DrawString("Dist: " + std::to_string((keeperPos - goosePos).Length()) , Vector2(10, 10));
+
     dir.y = 0.0f;
     dir.Normalise();
 
@@ -476,6 +483,9 @@ void TutorialGame::InitWorld() {
 
     AddWorldTiles();
 
+
+    BridgeConstraintTest();
+
     //AddFloorToWorld(Vector3(0, -2, 0));
 }
 
@@ -625,20 +635,58 @@ void TutorialGame::CollectApple(GameObject* a, GameObject* b) {
         if (a->GetName() == "Apple") {
 
             if (!(std::find(m_AppleChain.begin(), m_AppleChain.end(), a) != m_AppleChain.end()) &&
-                !(std::find(m_AppleStash.begin(), m_AppleStash.end(), a) != m_AppleStash.end())) {
+                !(std::find(m_AppleStash.begin(), m_AppleStash.end(), a) != m_AppleStash.end()) &&
+                !(std::find(m_SpoiltApples.begin(), m_SpoiltApples.end(), b) != m_SpoiltApples.end())) {
                 m_AppleChain.push_back(a);
-            } 
+            }
 
         } else if (b->GetName() == "Apple") {
+
             if (!(std::find(m_AppleChain.begin(), m_AppleChain.end(), b) != m_AppleChain.end()) &&
-                !(std::find(m_AppleStash.begin(), m_AppleStash.end(), b) != m_AppleStash.end())) {
+                !(std::find(m_AppleStash.begin(), m_AppleStash.end(), b) != m_AppleStash.end()) &&
+                !(std::find(m_SpoiltApples.begin(), m_SpoiltApples.end(), b) != m_SpoiltApples.end())) {
                 m_AppleChain.push_back(b);
+            }
+
+        }
+
+    } else if (!m_AppleChain.empty() && (
+                a->GetName() == "Keeper" ||
+                b->GetName() == "Keeper")) {
+
+        if (a->GetName() == "Keeper") {
+
+            for (GameObject* apple : m_AppleChain) {
+                m_SpoiltApples.push_back(apple);
+                apple->GetRenderObject()->SetColour(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+
+                auto it = std::find(m_Apples.begin(), m_Apples.end(), apple);
+                if (it != m_Apples.end()) {
+                    m_Apples.erase(it);
+                }
+            }
+
+        } else if (b->GetName() == "Keeper") {
+
+            for (GameObject* apple : m_AppleChain) {
+                m_SpoiltApples.push_back(apple);
+                apple->GetRenderObject()->SetColour(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+
+                auto it = std::find(m_Apples.begin(), m_Apples.end(), apple);
+                if (it != m_Apples.end()) {
+                    m_Apples.erase(it);
+                }
+
             }
         }
 
-    }
+        m_AppleChain.clear();
 
-}
+        if (m_Apples.empty()) {
+            SpawnApples();
+        }
+    }
+} 
 
 
 GameObject* TutorialGame::AddParkKeeperToWorld(const Vector3& position) {
@@ -780,14 +828,14 @@ void TutorialGame::InitCubeGridWorld(int numRows, int numCols, float rowSpacing,
 }
 
 void TutorialGame::BridgeConstraintTest() {
-    Vector3 cubeSize = Vector3(8, 8, 8);
+    Vector3 cubeSize = Vector3(1.0f, 1.0f, 1.0f);
 
     float invCubeMass = 5;
-    int numLinks = 25;
-    float maxDistance = 30;
-    float cubeDistance = 20;
+    int numLinks = 5;
+    float maxDistance = 6;
+    float cubeDistance = 5;
 
-    Vector3 startPos = Vector3(500, 1000, 500);
+    Vector3 startPos = Vector3(10.0f, 25.0f, 10.0f);
 
     GameObject* start = AddCubeToWorld(startPos + Vector3(0, 0, 0), cubeSize, 0);
 

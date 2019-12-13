@@ -68,8 +68,8 @@ namespace NCL {
 
             std::vector<GameObject*> m_AppleChain;
             std::vector<GameObject*> m_AppleStash;
+            std::vector<GameObject*> m_SpoiltApples;
             std::vector<GameObject*> m_Apples;
-
 
             GameObject* m_Goose;
             GameObject* m_Keeper;
