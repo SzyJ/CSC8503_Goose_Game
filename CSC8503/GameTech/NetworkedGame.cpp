@@ -69,9 +69,17 @@ bool NetworkedGame::StartAsClient(char a, char b, char c, char d) {
     m_ThisClient = new GameClient();
     m_ThisClient->RegisterPacketHandler(Delta_State, this);
     m_ThisClient->RegisterPacketHandler(Full_State, this);
+    m_ThisClient->RegisterPacketHandler(Player_Connected, this);
+    m_ThisClient->RegisterPacketHandler(Player_Disconnected, this);
 
-    bool connectSuccess = m_ThisClient->Connect(a, b, c, d, port);
+    bool connectSuccess = m_ThisClient->Connect(127, 0, 0, 1, port);
 
+    int thisID;
+    while ((thisID = m_ThisClient->GetID()) < 0) {
+        m_ThisClient->UpdateClient();
+    }
+
+    m_LocalPlayer->SetNetworkObject(new NetworkObject(*m_LocalPlayer, thisID));
     return connectSuccess;
 }
 

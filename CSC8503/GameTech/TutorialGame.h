@@ -44,6 +44,12 @@ namespace NCL {
 
             void UpdateObjectGravity();
 
+            void UpdateLocalScore();
+
+            void SpawnApples(float spawnOffset = 15.0f);
+
+            void CollectApple(GameObject* a, GameObject* b);
+
             GameObject* AddFloorToWorld(const Vector3& position);
             GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
             GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
@@ -61,6 +67,10 @@ namespace NCL {
             Vector3 m_NextWaypoint;
 
             std::vector<GameObject*> m_AppleChain;
+            std::vector<GameObject*> m_AppleStash;
+            std::vector<GameObject*> m_Apples;
+
+
             GameObject* m_Goose;
             GameObject* m_Keeper;
 
@@ -72,6 +82,8 @@ namespace NCL {
             bool m_UseGravity;
             bool m_InSelectionMode;
             float m_ForceMagnitude;
+
+            uint32_t m_LocalScore;
 
             OGLMesh* m_CubeMesh = nullptr;
             OGLMesh* m_SphereMesh = nullptr;

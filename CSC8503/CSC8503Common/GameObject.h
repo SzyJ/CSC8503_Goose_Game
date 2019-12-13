@@ -10,6 +10,8 @@
 #include <vector>
 #include <deque>
 
+#include <functional>
+
 using std::vector;
 
 namespace NCL {
@@ -116,6 +118,10 @@ namespace NCL {
                         otherObject->GetPhysicsObject()->AddForce(swimDir * 50.0f);
                     }
                 }
+
+                if (m_CollisionCallback) {
+                    m_CollisionCallback(this, otherObject);
+                }
             }
 
             virtual void OnCollisionEnd(GameObject* otherObject) {
@@ -127,6 +133,8 @@ namespace NCL {
 
             void UpdateBroadphaseAABB();
 
+            void SetCollisionCallback(const std::function<void(GameObject*, GameObject*)>& callback) { m_CollisionCallback = callback; }
+
         protected:
             Transform m_Transform;
             CollisionVolume* m_BoundingVolume = nullptr;
@@ -136,6 +144,8 @@ namespace NCL {
             bool m_IsActive;
             string m_Name;
             Vector3 m_BroadphaseAABB;
+
+            std::function<void(GameObject*, GameObject*)> m_CollisionCallback;
         };
 
     }

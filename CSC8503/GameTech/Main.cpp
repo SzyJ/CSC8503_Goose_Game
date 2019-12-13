@@ -153,7 +153,7 @@ hide or show the
 void SoloHonk(Window* w);
 void MultiHonk(Window* w, bool host);
 
-void MainMenu(Pushdown& gameState);
+void MainMenu(Window* w, Pushdown& gameState);
 
 int main() {
     Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
@@ -165,13 +165,12 @@ int main() {
     w->ShowOSPointer(false);
     w->LockMouseToWindow(true);
 
-
     Pushdown gameState;
     gameState.AddState(GameMenuState::Main_Menu);
 
     while (gameState.HasStates()) {
         if (gameState.GetCurrentState() == GameMenuState::Main_Menu) {
-            // show Menu
+            MainMenu(w, gameState);
         } else if (gameState.GetCurrentState() == GameMenuState::Solo_Honk) {
             SoloHonk(w);
             gameState.PopState();
@@ -185,9 +184,12 @@ int main() {
     }
 }
 
-void MainMenu(Pushdown& gameState) {
+void MainMenu(Window* w, Pushdown& gameState) {
     uint16_t SelectionIndex = 0;
     bool choiceMade = false;
+
+    auto* world = new GameWorld();
+    auto* renderer = new GameTechRenderer(*world);
 
     std::string choiceArray[4];
 
@@ -197,25 +199,43 @@ void MainMenu(Pushdown& gameState) {
     choiceArray[3] = "Quit";
 
     while (!choiceMade) {
+        w->UpdateWindow();
+        renderer->DrawString("Hello World", Vector2(0.0f, 0.0f), Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+
+        if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1)) {
+            SelectionIndex = 0;
+            choiceMade = true;
+        } else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2)) {
+            SelectionIndex = 1;
+            choiceMade = true;
+        } else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3)) {
+            SelectionIndex = 2;
+            choiceMade = true;
+        } else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4)) {
+            SelectionIndex = 3;
+            choiceMade = true;
+        }
 
     }
+
+    delete world;
+    delete renderer;
 
     switch(SelectionIndex) {
     case 0:
-
+        gameState.AddState(GameMenuState::Solo_Honk);
         break;
     case 1:
-
+        gameState.AddState(GameMenuState::Host_Honk);
         break;
     case 2:
-
+        gameState.AddState(GameMenuState::Join_Honk);
         break;
     case 3:
-
+        gameState.PopState();
         break;
     }
 
-    
 }
 
 void SoloHonk(Window* w) {

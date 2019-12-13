@@ -75,12 +75,6 @@ void TutorialGame::UpdateGame(float dt) {
 
     UpdateKeys();
 
-    if (m_UseGravity) {
-        Debug::Print("(G)ravity on", Vector2(10, 40));
-    } else {
-        Debug::Print("(G)ravity off", Vector2(10, 40));
-    }
-
     UpdateObjectGravity();
 
     SelectObject();
@@ -88,16 +82,19 @@ void TutorialGame::UpdateGame(float dt) {
         MoveSelectedObject();
     }
 
-    UpdateAppleForces();
 
     UpdateGooseOrientation();
 
     UpdateKeeperForces();
 
+    UpdateAppleForces();
+
     m_World->UpdateWorld(dt);
     m_Renderer->Update(dt);
     m_Physics->Update(dt);
 
+    UpdateLocalScore();
+  
     Debug::FlushRenderables();
     m_Renderer->Render();
 }
@@ -294,6 +291,38 @@ void TutorialGame::UpdateKeys() {
     UpdateCamPosition();
 }
 
+void TutorialGame::UpdateLocalScore() {
+    m_Renderer->DrawString("Score: " + std::to_string(m_LocalScore), Vector2(10, 40));
+
+    if (m_AppleChain.size() != m_Apples.size()) {
+        m_Renderer->DrawString("Apples: " + std::to_string(m_AppleChain.size()) + " / " + std::to_string(m_Apples.size()), Vector2(10, 25));
+        return;
+    }
+
+    const float dist = 7.0f;
+    Vector3 goosePos = m_Goose->GetTransform().GetWorldPosition();
+    Vector3 homePos = m_GameState->GetNavigationGrid()->GetGoosePosition();
+    homePos.y += 5.0f * m_GameState->HeightAt(goosePos.x, goosePos.z);
+
+    m_Renderer->DrawString("Dist to home: " + std::to_string((goosePos - homePos).Length()), Vector2(10, 25));
+
+    if ((goosePos - homePos).Length() > dist) {
+        return;
+    }
+
+    m_LocalScore += m_AppleChain.size();
+
+    m_AppleChain.clear();
+
+    for (GameObject* apple : m_Apples) {
+        apple->GetRenderObject()->SetColour(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+        m_AppleStash.push_back(apple);
+    }
+
+
+    SpawnApples();
+}
+
 void TutorialGame::MoveGoose() {
     Matrix4 view = m_World->GetMainCamera()->BuildViewMatrix();
     Matrix4 camWorld = view.Inverse();
@@ -382,12 +411,6 @@ bool TutorialGame::SelectObject() {
             Window::GetWindow()->LockMouseToWindow(true);
         }
     }
-
-    if (m_InSelectionMode) {
-        m_Renderer->DrawString("Press Esc to change to camera mode!", Vector2(10, 0));
-    } else {
-        m_Renderer->DrawString("Press Esc to change to select mode!", Vector2(10, 0));
-    }
     return false;
 }
 
@@ -440,11 +463,7 @@ void TutorialGame::InitWorld() {
     goosePos.y += spawnOffset;
     m_Goose = AddGooseToWorld(goosePos);
 
-    for (auto position : m_GameState->GetNavigationGrid()->GetApplePositions()) {
-        position.y += m_GameState->HeightAt(position.x, position.z) * 1.0f;
-        position.y += spawnOffset;
-        m_AppleChain.push_back(AddAppleToWorld(position));
-    }
+    SpawnApples(spawnOffset);
 
     Vector3 keeperPos = m_GameState->GetNavigationGrid()->GetKeeperPosition();
     keeperPos.y += m_GameState->HeightAt(keeperPos.x, keeperPos.z) * 1.0f;
@@ -458,6 +477,18 @@ void TutorialGame::InitWorld() {
     AddWorldTiles();
 
     //AddFloorToWorld(Vector3(0, -2, 0));
+}
+
+void TutorialGame::SpawnApples(float spawnOffset) {
+
+    m_Apples.clear();
+
+    for (auto position : m_GameState->GetNavigationGrid()->GetApplePositions()) {
+        position.y += m_GameState->HeightAt(position.x, position.z) * 1.0f;
+        position.y += spawnOffset;
+        m_Apples.push_back(AddAppleToWorld(position));
+    }
+
 }
 
 //From here on it's functions to add in objects to the world!
@@ -568,7 +599,6 @@ GameObject* TutorialGame::AddGooseToWorld(const Vector3& position) {
 
     GameObject* goose = new GameObject("Goose");
 
-
     SphereVolume* volume = new SphereVolume(size);
     goose->SetBoundingVolume((CollisionVolume*) volume);
 
@@ -581,10 +611,35 @@ GameObject* TutorialGame::AddGooseToWorld(const Vector3& position) {
     goose->GetPhysicsObject()->SetInverseMass(inverseMass);
     goose->GetPhysicsObject()->InitSphereInertia();
 
+    goose->SetCollisionCallback([this](GameObject* a, GameObject* b) { CollectApple(a,b); });
+
     m_World->AddGameObject(goose);
 
     return goose;
 }
+
+void TutorialGame::CollectApple(GameObject* a, GameObject* b) {
+    if (a->GetName() == "Apple" ||
+        b->GetName() == "Apple") {
+
+        if (a->GetName() == "Apple") {
+
+            if (!(std::find(m_AppleChain.begin(), m_AppleChain.end(), a) != m_AppleChain.end()) &&
+                !(std::find(m_AppleStash.begin(), m_AppleStash.end(), a) != m_AppleStash.end())) {
+                m_AppleChain.push_back(a);
+            } 
+
+        } else if (b->GetName() == "Apple") {
+            if (!(std::find(m_AppleChain.begin(), m_AppleChain.end(), b) != m_AppleChain.end()) &&
+                !(std::find(m_AppleStash.begin(), m_AppleStash.end(), b) != m_AppleStash.end())) {
+                m_AppleChain.push_back(b);
+            }
+        }
+
+    }
+
+}
+
 
 GameObject* TutorialGame::AddParkKeeperToWorld(const Vector3& position) {
     float meshSize = 4.0f;
