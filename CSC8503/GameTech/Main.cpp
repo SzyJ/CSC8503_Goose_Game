@@ -185,7 +185,7 @@ int main() {
 }
 
 void MainMenu(Window* w, Pushdown& gameState) {
-    uint16_t SelectionIndex = 0;
+    int SelectionIndex = 0;
     bool choiceMade = false;
 
     auto* world = new GameWorld();
@@ -200,26 +200,42 @@ void MainMenu(Window* w, Pushdown& gameState) {
 
     while (!choiceMade) {
         w->UpdateWindow();
-        renderer->DrawString("Hello World", Vector2(0.0f, 0.0f), Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 
-        if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1)) {
-            SelectionIndex = 0;
-            choiceMade = true;
-        } else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2)) {
-            SelectionIndex = 1;
-            choiceMade = true;
-        } else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3)) {
-            SelectionIndex = 2;
-            choiceMade = true;
-        } else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4)) {
-            SelectionIndex = 3;
+        for (int i = 0; i < 4; ++i) {
+
+            Vector4 col;
+            if (SelectionIndex == i) {
+                col = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+            } else {
+                col = Vector4(0.3f, 0.3f, 0.3f, 1.0f);
+
+            }
+
+            renderer->DrawString(choiceArray[i], Vector2(200.0f, 200.0f - (i * 20.0f)),  col);
+
+        }
+
+        renderer->Render();
+
+        if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::UP)) {
+            --SelectionIndex;
+            if (SelectionIndex < 0) {
+                SelectionIndex = 0;
+            }
+        } else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::DOWN)) {
+            ++SelectionIndex;
+            if (SelectionIndex > 3) {
+                SelectionIndex = 3;
+            }
+        } else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN)) {
             choiceMade = true;
         }
 
     }
 
-    delete world;
     delete renderer;
+    delete world;
+    
 
     switch(SelectionIndex) {
     case 0:
