@@ -58,7 +58,7 @@ namespace NCL {
                     for (const auto& entry : m_Contents) {
                         for (int j = 0; j < 4; ++j) {
                             auto entryCopy = entry;
-                            m_Children->Insert(entryCopy.Object, entryCopy.Pos, entryCopy.Size, depthLeft - 1, maxSize);
+                            m_Children[j].Insert(entryCopy.Object, entryCopy.Pos, entryCopy.Size, depthLeft - 1, maxSize);
                         }
                     }
 

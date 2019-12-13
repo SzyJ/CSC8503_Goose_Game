@@ -218,8 +218,6 @@ void TutorialGame::UpdateKeeperForces() {
         dir = (goosePos - keeperPos);
     }
 
-    m_Renderer->DrawString("Dist: " + std::to_string((keeperPos - goosePos).Length()) , Vector2(10, 10));
-
     dir.y = 0.0f;
     dir.Normalise();
 
