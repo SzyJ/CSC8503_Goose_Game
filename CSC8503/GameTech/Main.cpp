@@ -182,6 +182,8 @@ int main() {
             gameState.PopState();
         }
     }
+
+    Window::DestroyGameWindow();
 }
 
 void MainMenu(Window* w, Pushdown& gameState) {
@@ -208,7 +210,6 @@ void MainMenu(Window* w, Pushdown& gameState) {
                 col = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
             } else {
                 col = Vector4(0.3f, 0.3f, 0.3f, 1.0f);
-
             }
 
             renderer->DrawString(choiceArray[i], Vector2(200.0f, 200.0f - (i * 20.0f)),  col);
@@ -217,17 +218,20 @@ void MainMenu(Window* w, Pushdown& gameState) {
 
         renderer->Render();
 
-        if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::UP)) {
+        if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::UP) ||
+            Window::GetKeyboard()->KeyPressed(KeyboardKeys::W)) {
             --SelectionIndex;
             if (SelectionIndex < 0) {
                 SelectionIndex = 0;
             }
-        } else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::DOWN)) {
+        } else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::DOWN) ||
+            Window::GetKeyboard()->KeyPressed(KeyboardKeys::S)) {
             ++SelectionIndex;
             if (SelectionIndex > 3) {
                 SelectionIndex = 3;
             }
-        } else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN)) {
+        } else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN) ||
+            Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
             choiceMade = true;
         }
 
@@ -276,7 +280,6 @@ void SoloHonk(Window* w) {
 
         g->UpdateGame(dt);
     }
-    Window::DestroyGameWindow();
 }
 
 void MultiHonk(Window* w, bool host) {
@@ -307,6 +310,5 @@ void MultiHonk(Window* w, bool host) {
 
         g->UpdateGame(dt);
     }
-    Window::DestroyGameWindow();
 }
 
