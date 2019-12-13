@@ -27,6 +27,7 @@ void NetworkedGame::UpdateGame(float dt) {
     TutorialGame::UpdateGame(dt);
 
     // TODO send local goose updates to server
+
     //GamePacket* goosePos;
     //m_Goose->GetNetworkObject()->WritePacket(&goosePos, false, 0);
     //if (m_IsServer) {
@@ -34,7 +35,6 @@ void NetworkedGame::UpdateGame(float dt) {
     //} else {
     //    m_ThisClient->SendPacket((GamePacket)*goosePos);
     //}
-
     //delete goosePos;
 }
 
@@ -107,7 +107,11 @@ void NetworkedGame::SpawnPlayer(int playerID) {
         return;
     }
 
-    GameObject* newGoose = AddGooseToWorld(m_GameState->GetNavigationGrid()->GetGoosePosition());
+    Vector3 spawnPos = m_GameState->GetNavigationGrid()->GetGoosePosition();
+    spawnPos.y += m_GameState->HeightAt(spawnPos.x, spawnPos.z) * 1.0f;
+    spawnPos.y += 15.0f;
+
+    GameObject* newGoose = AddGooseToWorld(spawnPos);
     newGoose->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
     newGoose->SetNetworkObject(new NetworkObject(*newGoose, playerID));
     m_ServerPlayers.insert({ playerID, newGoose });
@@ -129,7 +133,6 @@ void NetworkedGame::ClientReceiver(int type, GamePacket* payload, int source) {
         if (id < 0) {
             break;
         }
-
 
         if (id != m_ThisClientPlayerID) {
             m_ServerPlayers[id]->GetNetworkObject()->ReadPacket(*realPacket);

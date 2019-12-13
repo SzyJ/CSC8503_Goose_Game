@@ -8,7 +8,9 @@ namespace NCL {
         struct FullPacket : public GamePacket {
             int ObjectID = -1;
 
-            NetworkState FullState;
+            char Pos[3];
+
+            char Orientation[4];
 
             FullPacket() {
                 Type = Full_State;
