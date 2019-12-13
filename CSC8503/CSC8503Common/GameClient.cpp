@@ -41,7 +41,7 @@ void GameClient::UpdateClient() {
         if (event.type == ENET_EVENT_TYPE_CONNECT) {
             std::cout << "Client: Connected to server!" << std::endl;
 
-            m_ThisID = event.peer->incomingPeerID;
+            m_ThisID = event.peer->outgoingPeerID;
 
         } else if (event.type == ENET_EVENT_TYPE_RECEIVE) {
             std::cout << "Client: Packet received..." << std::endl;

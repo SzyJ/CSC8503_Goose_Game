@@ -36,7 +36,7 @@ bool NetworkedGame::StartAsServer() {
 
     m_IsServer = true;
 
-    m_ThisServer = new GameServer(port, 1);
+    m_ThisServer = new GameServer(port, 2);
     m_ThisServer->RegisterPacketHandler(Delta_State, this);
     m_ThisServer->RegisterPacketHandler(Full_State, this);
     m_ThisServer->RegisterPacketHandler(Player_Connected, this);
@@ -74,6 +74,10 @@ bool NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 
     bool connectSuccess = m_ThisClient->Connect(127, 0, 0, 1, port);
 
+    if (!connectSuccess) {
+        return false;
+    }
+
     int thisID;
     while ((thisID = m_ThisClient->GetID()) < 0) {
         m_ThisClient->UpdateClient();
@@ -92,10 +96,7 @@ void NetworkedGame::SpawnPlayer(int playerID) {
 
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 
-    if (m_IsServer) {
-        m_ThisServer->SendGlobalPacket(*payload);
-    }
-    
+    ServerReceiver(type, payload, source);
     ClientReceiver(type, payload, source);
 
 }
@@ -147,6 +148,33 @@ void NetworkedGame::ClientReceiver(int type, GamePacket* payload, int source) {
         break;
     }
 }
+
+void NetworkedGame::ServerReceiver(int type, GamePacket* payload, int source) {
+
+    switch (type) {
+    case Player_Connected: {
+        NewPlayerPacket* realPacket = (NewPlayerPacket*)payload;
+        int thisID = realPacket->PlayerID;
+        if (thisID != m_ThisClient->GetID()) {
+            SpawnPlayer(thisID);
+        }
+
+        break;
+    }
+
+    case Player_Disconnected: {
+        PlayerDisconnectPacket* realPacket = (PlayerDisconnectPacket*)payload;
+        delete m_ServerPlayers[realPacket->PlayerID];
+        m_ServerPlayers.erase(realPacket->PlayerID);
+
+        break;
+    }
+
+    default:
+        break;
+}
+}
+
 
 void NetworkedGame::UpdateAsServer(float dt) {
     m_ThisServer->UpdateServer();
